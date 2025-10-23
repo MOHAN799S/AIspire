@@ -5,7 +5,7 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
-import ScrollSmoother from './smooth'
+
 
 // Load fonts with variables
 const inter = Inter({
