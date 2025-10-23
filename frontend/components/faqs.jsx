@@ -1,12 +1,23 @@
-import React from 'react'
+'use client'
+import React, { useEffect, useRef } from 'react'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const Faqs = () => {
+  const sectionRef = useRef(null)
+  const titleRef = useRef(null)
+  const subtitleRef = useRef(null)
+  const accordionRef = useRef(null)
+  const itemsRef = useRef([])
+
   const faqs = [
     {
       question: "What is an AI-powered resume generator?",
@@ -40,19 +51,167 @@ const Faqs = () => {
     },
   ];
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const mm = gsap.matchMedia()
+
+      // GSAP animations for small devices only (max-width: 767px)
+      mm.add("(max-width: 767px)", () => {
+        // Title animation - zoom in
+        gsap.fromTo(
+          titleRef.current,
+          { 
+            opacity: 0, 
+            scale: 0.5,
+            y: 50
+          },
+          {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 1,
+            ease: 'back.out(1.7)',
+            force3D: true,
+            scrollTrigger: {
+              trigger: titleRef.current,
+              start: 'top 80%',
+              once: true,
+            },
+          }
+        )
+
+        // Subtitle animation - slide from bottom
+        gsap.fromTo(
+          subtitleRef.current,
+          { 
+            opacity: 0, 
+            y: 30
+          },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            delay: 0.3,
+            ease: 'power3.out',
+            force3D: true,
+            scrollTrigger: {
+              trigger: subtitleRef.current,
+              start: 'top 80%',
+              once: true,
+            },
+          }
+        )
+
+        // Accordion items stagger animation
+        itemsRef.current.forEach((item, index) => {
+          if (item) {
+            gsap.fromTo(
+              item,
+              {
+                opacity: 0,
+                x: index % 2 === 0 ? -50 : 50,
+                rotateX: 45,
+              },
+              {
+                opacity: 1,
+                x: 0,
+                rotateX: 0,
+                duration: 0.8,
+                delay: index * 0.1,
+                ease: 'power3.out',
+                force3D: true,
+                scrollTrigger: {
+                  trigger: item,
+                  start: 'top 90%',
+                  once: true,
+                  fastScrollEnd: true,
+                },
+              }
+            )
+          }
+        })
+      })
+
+      // Minimal animations for medium and larger devices
+      mm.add("(min-width: 768px)", () => {
+        // Simple fade for title
+        gsap.fromTo(
+          titleRef.current,
+          { opacity: 0 },
+          {
+            opacity: 1,
+            duration: 0.6,
+            scrollTrigger: {
+              trigger: titleRef.current,
+              start: 'top 80%',
+              once: true,
+            },
+          }
+        )
+
+        // Simple fade for subtitle
+        gsap.fromTo(
+          subtitleRef.current,
+          { opacity: 0 },
+          {
+            opacity: 1,
+            duration: 0.6,
+            delay: 0.2,
+            scrollTrigger: {
+              trigger: subtitleRef.current,
+              start: 'top 80%',
+              once: true,
+            },
+          }
+        )
+
+        // Simple fade for accordion
+        gsap.fromTo(
+          accordionRef.current,
+          { opacity: 0 },
+          {
+            opacity: 1,
+            duration: 0.6,
+            scrollTrigger: {
+              trigger: accordionRef.current,
+              start: 'top 85%',
+              once: true,
+            },
+          }
+        )
+      })
+
+      return () => mm.revert()
+    }, sectionRef)
+
+    return () => ctx.revert()
+  }, [])
+
   return (
-    <section className="relative py-16 px-4 z-10 bg-black">
+    <section ref={sectionRef} className="relative py-16 px-4 z-10 bg-black">
       <div className="text-center mb-10">
-        <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
-        <p className="text-gray-600">Answers to the most common questions about our platform and tools.</p>
+        <h2 ref={titleRef} className="text-3xl font-bold mb-4 text-white">
+          Frequently Asked Questions
+        </h2>
+        <p ref={subtitleRef} className="text-gray-400">
+          Answers to the most common questions about our platform and tools.
+        </p>
       </div>
 
-      <div className="font-mono max-w-5xl md:max-w-3xl sm:max-w-xl mx-auto">
+      <div ref={accordionRef} className="font-mono max-w-5xl md:max-w-3xl sm:max-w-xl mx-auto">
         <Accordion type="single" collapsible className='w-full'>
           {faqs.map((item, index) => (
-            <AccordionItem key={index} value={`item-${index}`}>
-              <AccordionTrigger>{item.question}</AccordionTrigger>
-              <AccordionContent>{item.answer}</AccordionContent>
+            <AccordionItem 
+              key={index} 
+              value={`item-${index}`}
+              ref={(el) => (itemsRef.current[index] = el)}
+            >
+              <AccordionTrigger className="text-white hover:text-gray-300">
+                {item.question}
+              </AccordionTrigger>
+              <AccordionContent className="text-gray-400">
+                {item.answer}
+              </AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>

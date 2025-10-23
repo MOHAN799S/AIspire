@@ -154,12 +154,12 @@ export const Header = () => {
                 
                 <SignedOut>
                     <SignInButton>
-                        <Button variant='outline' className='h-9 sm:h-10 px-3 sm:px-4'>
+                        <Button variant='outline' className='h-9 sm:h-10 px-3 sm:px-4 hover:cursor-pointer'>
                             Sign In
                         </Button>
                     </SignInButton>
                     <SignUpButton>
-                        <Button className='h-9 sm:h-10 px-3 sm:px-4 hidden sm:inline-flex'>
+                        <Button className='h-9 sm:h-10 px-3 sm:px-4 hidden sm:inline-flex hover:cursor-pointer'>
                             Get Started
                         </Button>
                     </SignUpButton>
