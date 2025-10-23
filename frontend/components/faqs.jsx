@@ -41,7 +41,7 @@ const Faqs = () => {
   ];
 
   return (
-    <section className="relative py-16 px-4 z-10">
+    <section className="relative py-16 px-4 z-10 bg-black">
       <div className="text-center mb-10">
         <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
         <p className="text-gray-600">Answers to the most common questions about our platform and tools.</p>

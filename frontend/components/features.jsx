@@ -10,6 +10,12 @@ const features = [
     badge: 'Core Feature'
   },
   {
+    icon: FileText,
+    title: 'AI-Powered Resume Generator',
+    description: 'Create professional, tailored resumes instantly using advanced AI algorithms that highlight your strengths and experiences.',
+    badge: 'Core Feature'
+  },
+  {
     icon: PenBox,
     title: 'Cover Letter Builder',
     description: "Generate compelling cover letters customized to the job you're applying for, helping you stand out from the competition.",

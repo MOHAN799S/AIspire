@@ -1,7 +1,7 @@
 import React from "react";
 import { Quote } from "lucide-react";
 import { Card } from "./ui/card";
-
+// eslint-disable-next-line react/no-unescaped-entities
 const testimonials = [
   {
     name: "Sarah Johnson",
@@ -129,7 +129,9 @@ const Testimonials = () => {
                 <p className="text-gray-500 text-xs">{testimonial.company}</p>
               </div>
             </div>
-            <p className="text-gray-300 leading-relaxed">"{testimonial.text}"</p>
+            <p className="text-gray-300 leading-relaxed">
+    &quot;{testimonial.text}&quot;
+  </p>
           </Card>
           
           ))}
