@@ -14,7 +14,8 @@ import {
   TrendingUp,
   MessageSquare,
   Flag,
-  Route
+  Route,
+  ChartNoAxesCombined
 } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
 
@@ -42,7 +43,7 @@ export const Header = () => {
                           variant='outline' 
                           className='hover:bg-primary/10 hover:text-primary h-9 sm:h-10 px-1.5 sm:px-2 md:px-4 hover:cursor-pointer'
                         >
-                            <LayoutDashboard className='w-4 h-4' />
+                            <ChartNoAxesCombined className='w-4 h-4' />
                             <span className='hidden sm:inline-block ml-2'>Dashboard</span>
                         </Button>
                     </Link>

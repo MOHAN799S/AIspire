@@ -5,6 +5,7 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
+import Chatbot from "@/components/Chat";
 
 
 // Load fonts with variables
@@ -47,7 +48,7 @@ export default function RootLayout({ children }) {
           >
             {/* Header */}
             <Header />
-
+<Chatbot></Chatbot>
             <main className="min-h-screen">{children}</main>
 
             {/* Footer */}

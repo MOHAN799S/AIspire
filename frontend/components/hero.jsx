@@ -139,6 +139,11 @@ export const HeroSection = () => {
                 Get Started
               </Button>
             </Link>
+             <a href="/files/demo.pptx" download>
+    <Button size="lg" variant="outline" className="px-8 hover:cursor-pointer">
+      Download PPT
+    </Button>
+  </a>
           </div>
 
           <div className='hero-image-wrapper mt-5 md:mt-0 '>
