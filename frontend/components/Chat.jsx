@@ -158,7 +158,7 @@ export default function Chatbot() {
 
     try {
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000"}/api/chat`,
+        `${process.env.NEXT_PUBLIC_API_BASE}/api/chat`,
         {
           message: userMessage,
           userId: userId,
