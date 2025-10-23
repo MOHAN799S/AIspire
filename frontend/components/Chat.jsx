@@ -388,7 +388,7 @@ export default function Chatbot() {
                     Welcome to AIspire
                   </h3>
                   <p className="text-sm text-gray-400 max-w-xs mx-auto">
-                    Ask me anything about AIspire, its features, or the developer. I'm here to help!
+                    Ask me anything about AIspire, its features, or the developer. I&apos;m here to help!
                   </p>
                 </motion.div>
               ) : null}
