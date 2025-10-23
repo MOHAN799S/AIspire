@@ -6,6 +6,8 @@ import Footer from "@/components/footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import Chatbot from "@/components/Chat";
+import { Toaster } from "sonner";
+import { AuthListener } from "@/components/AuthListener";
 
 
 // Load fonts with variables
@@ -39,16 +41,37 @@ export default function RootLayout({ children }) {
         suppressHydrationWarning
         className={`${inter.variable} ${spaceGrotesk.variable} scroll-smooth`}
       >
-  <body className="antialiased font-sans">
+        <body className="antialiased font-sans">
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
             enableSystem
             disableTransitionOnChange
           >
+            {/* Auth Status Listener for Toast Notifications */}
+            <AuthListener />
+            
+            {/* Toast Notifications */}
+            <Toaster
+              position="top-right"
+              theme="dark"
+              toastOptions={{
+                style: {
+                  background: '#1a1a1a',
+                  border: '1px solid #333',
+                  color: '#fff',
+                },
+                className: 'sonner-toast',
+              }}
+            />
+            
             {/* Header */}
             <Header />
-<Chatbot></Chatbot>
+            
+            {/* Chatbot */}
+            <Chatbot />
+            
+            {/* Main Content */}
             <main className="min-h-screen">{children}</main>
 
             {/* Footer */}

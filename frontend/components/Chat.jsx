@@ -1,12 +1,91 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { MessageCircle, X, Moon, Sun, Send, Sparkles, Bot, User, Trash2, AlertCircle } from "lucide-react";
+import { MessageCircle, X, Moon, Sun, Send, Sparkles, Bot, User, Trash2, AlertCircle, Check, CheckCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
 
 function makeSessionId() {
   return "sess_" + Math.random().toString(36).substring(2, 10);
+}
+
+// Format timestamp to human-readable format
+function formatTimestamp(timestamp) {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diff = now - date;
+  
+  // Less than 1 minute
+  if (diff < 60000) {
+    return "Just now";
+  }
+  
+  // Less than 1 hour
+  if (diff < 3600000) {
+    const mins = Math.floor(diff / 60000);
+    return `${mins}m ago`;
+  }
+  
+  // Today
+  if (date.toDateString() === now.toDateString()) {
+    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  }
+  
+  // Yesterday
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (date.toDateString() === yesterday.toDateString()) {
+    return `Yesterday ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
+  }
+  
+  // This year
+  if (date.getFullYear() === now.getFullYear()) {
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+  }
+  
+  // Other years
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+// Status component
+function MessageStatus({ status, darkMode }) {
+  if (status === 'sending') {
+    return (
+      <motion.div
+        animate={{ opacity: [0.3, 1, 0.3] }}
+        transition={{ repeat: Infinity, duration: 1.5 }}
+        className="flex items-center gap-0.5"
+      >
+        <Check size={14} className={darkMode ? "text-gray-500" : "text-gray-400"} />
+      </motion.div>
+    );
+  }
+  
+  if (status === 'sent') {
+    return (
+      <Check size={14} className={darkMode ? "text-gray-400" : "text-gray-500"} />
+    );
+  }
+  
+  if (status === 'delivered') {
+    return (
+      <CheckCheck size={14} className={darkMode ? "text-gray-400" : "text-gray-500"} />
+    );
+  }
+  
+  if (status === 'read') {
+    return (
+      <CheckCheck size={14} className="text-blue-500" />
+    );
+  }
+  
+  if (status === 'failed') {
+    return (
+      <AlertCircle size={14} className="text-red-500" />
+    );
+  }
+  
+  return null;
 }
 
 export default function Chatbot() {
@@ -43,13 +122,11 @@ export default function Chatbot() {
     localStorage.setItem("aispire-theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
-  // Load chat history only after user is loaded and session is ready
+  // Load chat history
   useEffect(() => {
     if (!isLoaded || !sessionId) return;
 
-    // Only load history if user is signed in
     if (!isSignedIn) {
-      // Load from local storage for non-authenticated users
       const local = localStorage.getItem("aispire-chat-local");
       if (local) {
         try {
@@ -65,9 +142,9 @@ export default function Chatbot() {
       try {
         const params = `?userId=${encodeURIComponent(userId)}`;
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000"}/api/chat/history${params}`,
+          `${process.env.NEXT_PUBLIC_API_BASE}/api/chat/history${params}`,
           {
-            timeout: 10000, // 10 second timeout
+            timeout: 10000,
             headers: {
               'Content-Type': 'application/json'
             }
@@ -77,12 +154,13 @@ export default function Chatbot() {
         if (res.data?.messages && Array.isArray(res.data.messages)) {
           setMessages(res.data.messages.map(m => ({ 
             sender: m.sender, 
-            text: m.text 
+            text: m.text,
+            timestamp: m.timestamp || Date.now(),
+            status: m.sender === 'user' ? 'read' : undefined
           })));
         }
       } catch (err) {
         console.error("Failed to load history:", err);
-        // Fallback to local storage
         const local = localStorage.getItem("aispire-chat-local");
         if (local) {
           try {
@@ -106,7 +184,6 @@ export default function Chatbot() {
         console.error("Failed to save messages locally:", err);
       }
       
-      // Auto-scroll
       setTimeout(() => {
         if (scrollRef.current) {
           scrollRef.current.scrollTo({ 
@@ -118,13 +195,43 @@ export default function Chatbot() {
     }
   }, [messages]);
 
+  // Simulate message status updates
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1];
+    if (!lastMessage || lastMessage.sender !== 'user') return;
+
+    if (lastMessage.status === 'sending') {
+      const timer = setTimeout(() => {
+        setMessages(prev => prev.map((msg, idx) => 
+          idx === prev.length - 1 ? { ...msg, status: 'sent' } : msg
+        ));
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+
+    if (lastMessage.status === 'sent') {
+      const timer = setTimeout(() => {
+        setMessages(prev => prev.map((msg, idx) => 
+          idx === prev.length - 1 ? { ...msg, status: 'delivered' } : msg
+        ));
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [messages]);
+
   const toggleChat = () => {
-    // Show login prompt if trying to open chat while not signed in
     if (!isOpen && !isSignedIn && isLoaded) {
       setShowLoginPrompt(true);
       setTimeout(() => setShowLoginPrompt(false), 3000);
     }
     setIsOpen(!isOpen);
+    
+    // Mark all messages as read when opening chat
+    if (!isOpen) {
+      setMessages(prev => prev.map(msg => 
+        msg.sender === 'user' ? { ...msg, status: 'read' } : msg
+      ));
+    }
   };
 
   const toggleTheme = () => setDarkMode(prev => !prev);
@@ -139,11 +246,11 @@ export default function Chatbot() {
   const sendMessage = async (e) => {
     e?.preventDefault();
     
-    // Prevent sending if not signed in
     if (!isSignedIn) {
       setMessages(prev => [...prev, { 
         sender: "bot", 
-        text: "⚠️ Please sign in to use the chat feature." 
+        text: "⚠️ Please sign in to use the chat feature.",
+        timestamp: Date.now()
       }]);
       return;
     }
@@ -151,7 +258,12 @@ export default function Chatbot() {
     if (!input.trim()) return;
 
     const userMessage = input.trim();
-    const newMsg = { sender: "user", text: userMessage };
+    const newMsg = { 
+      sender: "user", 
+      text: userMessage,
+      timestamp: Date.now(),
+      status: 'sending'
+    };
     setMessages(prev => [...prev, newMsg]);
     setInput("");
     setIsTyping(true);
@@ -165,7 +277,7 @@ export default function Chatbot() {
           sessionId,
         },
         {
-          timeout: 30000, // 30 second timeout
+          timeout: 30000,
           headers: {
             'Content-Type': 'application/json'
           }
@@ -173,23 +285,41 @@ export default function Chatbot() {
       );
       
       const botText = res.data?.reply || "Sorry, I couldn't get a response.";
-      setMessages(prev => [...prev, { sender: "bot", text: botText }]);
+      
+      // Update user message to 'read' status
+      setMessages(prev => prev.map((msg, idx) => 
+        idx === prev.length - 1 ? { ...msg, status: 'read' } : msg
+      ));
+      
+      // Add bot response
+      setMessages(prev => [...prev, { 
+        sender: "bot", 
+        text: botText,
+        timestamp: Date.now()
+      }]);
     } catch (err) {
       console.error("Chat error:", err);
+      
+      // Update message status to failed
+      setMessages(prev => prev.map((msg, idx) => 
+        idx === prev.length - 1 ? { ...msg, status: 'failed' } : msg
+      ));
       
       let errorMessage = "⚠️ Something went wrong. Please try again.";
       
       if (err.code === 'ECONNABORTED') {
         errorMessage = "⚠️ Request timeout. Please check your connection and try again.";
       } else if (err.response) {
-        // Server responded with error
         errorMessage = `⚠️ Server error: ${err.response.status}. Please try again later.`;
       } else if (err.request) {
-        // Request made but no response
-        errorMessage = "⚠️ Network error. Please check your internet connection.(CORS)";
+        errorMessage = "⚠️ Network error. Please check your internet connection.";
       }
       
-      setMessages(prev => [...prev, { sender: "bot", text: errorMessage }]);
+      setMessages(prev => [...prev, { 
+        sender: "bot", 
+        text: errorMessage,
+        timestamp: Date.now()
+      }]);
     } finally {
       setIsTyping(false);
     }
@@ -399,33 +529,45 @@ export default function Chatbot() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  className={`flex items-end gap-2 ${m.sender === "user" ? "justify-end" : "justify-start"}`}
+                  className={`flex flex-col ${m.sender === "user" ? "items-end" : "items-start"}`}
                 >
-                  {m.sender === "bot" && (
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 shadow-md">
-                      <Bot size={16} className="text-white" />
-                    </div>
-                  )}
+                  <div className={`flex items-end gap-2 ${m.sender === "user" ? "flex-row-reverse" : "flex-row"}`}>
+                    {m.sender === "bot" ? (
+                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 shadow-md">
+                        <Bot size={16} className="text-white" />
+                      </div>
+                    ) : (
+                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center flex-shrink-0 shadow-md">
+                        <User size={16} className="text-white" />
+                      </div>
+                    )}
 
-                  <div
-                    className={`px-4 py-3 rounded-2xl max-w-[75%] text-sm shadow-md break-words ${
-                      m.sender === "user"
-                        ? darkMode
-                          ? "bg-gradient-to-br from-indigo-600 to-purple-600 text-white"
-                          : "bg-gradient-to-br from-indigo-500 to-purple-500 text-white"
-                        : darkMode
-                        ? "bg-gray-800 text-gray-100"
-                        : "bg-white text-gray-900"
-                    }`}
-                  >
-                    {m.text}
+                    <div
+                      className={`px-4 py-3 rounded-2xl max-w-[75%] text-sm shadow-md break-words ${
+                        m.sender === "user"
+                          ? darkMode
+                            ? "bg-gradient-to-br from-indigo-600 to-purple-600 text-white"
+                            : "bg-gradient-to-br from-indigo-500 to-purple-500 text-white"
+                          : darkMode
+                          ? "bg-gray-800 text-gray-100"
+                          : "bg-white text-gray-900"
+                      }`}
+                    >
+                      {m.text}
+                    </div>
                   </div>
-
-                  {m.sender === "user" && (
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center flex-shrink-0 shadow-md">
-                      <User size={16} className="text-white" />
-                    </div>
-                  )}
+                  
+                  {/* Timestamp and Status */}
+                  <div className={`flex items-center gap-1.5 mt-1 px-2 ${
+                    m.sender === "user" ? "flex-row-reverse" : "flex-row"
+                  }`}>
+                    <span className={`text-xs ${darkMode ? "text-gray-500" : "text-gray-400"}`}>
+                      {formatTimestamp(m.timestamp)}
+                    </span>
+                    {m.sender === "user" && m.status && (
+                      <MessageStatus status={m.status} darkMode={darkMode} />
+                    )}
+                  </div>
                 </motion.div>
               ))}
 

@@ -31,16 +31,26 @@ You are AIspire Assistant.
 - Website: AIspire
 - Developer: Mohan Alias 404 Graduate
 - Portfolio: https://your-portfolio-url.com
-- GitHub: https://github.com/404Graduate
-- LinkedIn: https://www.linkedin.com/in/404graduate
-- Contact Email: mohan@aispire.dev
+- GitHub: https://github.com/MOHAN799S
+- LinkedIn: https://www.linkedin.com/in/mohan-lakshman-sangidi-287322256/
+- Contact Email: mohansangidi@gmail.com
 - Location: India
 - Role: Full Stack Developer & AI Enthusiast
+- Experience: 4+ Years in Web Development & AI Integration
 - Motto: "Code. Create. Inspire."
+- Tagline: Empowering innovation through intelligent code.
+- Tech Stack: JavaScript (React, Node.js, Express), Python (Flask, FastAPI), TypeScript, Next.js, TailwindCSS, MongoDB, PostgreSQL, TensorFlow, OpenAI API
+- Services: Web App Development, AI Chatbot Integration, API Development, UI/UX Design, Automation Tools
+- Socials:
+   • Twitter: https://x.com/MohanSangidi
+   • Instagram: https://www.instagram.com/_mr_.mohan7
+- Mission: To build intelligent, user-focused digital experiences powered by AI and creativity.
+- Vision: To inspire developers and creators to leverage technology for meaningful impact.
 
-Answer in a friendly and concise manner. 
+Answer in a friendly and concise manner.
 Include developer information if asked.
 `;
+
 
 
     const response = await axios.post(

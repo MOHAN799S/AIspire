@@ -1,6 +1,6 @@
 'use client'
-import React from 'react'
-import { SignedOut, SignInButton, SignUpButton, SignedIn, UserButton } from '@clerk/nextjs'
+import React, { useEffect } from 'react'
+import { SignedOut, SignInButton, SignUpButton, SignedIn, UserButton, useUser } from '@clerk/nextjs'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from './ui/button'
@@ -18,8 +18,13 @@ import {
   ChartNoAxesCombined
 } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
+import { toast } from 'sonner'
 
 export const Header = () => {
+  const { isSignedIn, user } = useUser()
+  
+  // Note: Login/Logout toasts are now handled by AuthListener component in layout
+
   return (
     <header className='fixed top-0 w-full border-b bg-background/80 backdrop-blur-md z-50 supports-[backdrop-filter]:bg-background/60'>
         <nav className='mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 max-w-full h-16 flex items-center justify-between gap-4'>
@@ -112,35 +117,6 @@ export const Header = () => {
                         </DropdownMenuContent>
                     </DropdownMenu>
 
-                    {/* Feedback Dropdown */}
-                    {/* <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button 
-                              variant='ghost' 
-                              size='icon'
-                              className='hover:bg-primary/10 hover:text-primary h-9 w-9 sm:h-10 sm:w-10'
-                            >
-                                <MessageSquare className='w-4 h-4' />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className='w-52'>
-                            <DropdownMenuLabel>Help Us Improve</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem asChild>
-                                <Link href={`/testimonial`} className='flex items-center gap-3 cursor-pointer py-2'>
-                                    <MessageSquare className='w-4 h-4 text-green-600' />
-                                    <span>Share Testimonial</span>
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link href={`/report`} className='flex items-center gap-3 cursor-pointer py-2'>
-                                    <Flag className='w-4 h-4 text-orange-600' />
-                                    <span>Report an Issue</span>
-                                </Link>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu> */}
-
                     {/* User Profile */}
                     <UserButton 
                         appearance={{
@@ -159,16 +135,20 @@ export const Header = () => {
                             }
                         }} 
                         afterSwitchSessionUrl='/'
-                    />
+                        afterSignOutUrl='/'
+                    >
+                        <UserButton.UserProfilePage label="Account" />
+                        <UserButton.UserProfilePage label="Security" />
+                    </UserButton>
                 </SignedIn>
                 
                 <SignedOut>
-                    <SignInButton>
+                    <SignInButton mode="modal">
                         <Button variant='outline' className='h-9 sm:h-10 px-3 sm:px-4 hover:cursor-pointer'>
                             Sign In
                         </Button>
                     </SignInButton>
-                    <SignUpButton>
+                    <SignUpButton mode="modal">
                         <Button className='h-9 sm:h-10 px-3 sm:px-4 hidden sm:inline-flex hover:cursor-pointer'>
                             Get Started
                         </Button>
