@@ -22,7 +22,8 @@ const Footer = () => {
             . All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground">
-            Click on "404 Graduate" to visit the developer's portfolio
+ Click on &quot;404 Graduate&quot; to visit the developer&apos;s portfolio
+
           </p>
         </div>
       </div>

@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { Home, Search, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function NotFound() {
   return (
@@ -28,10 +29,11 @@ export default function NotFound() {
         
         {/* Message */}
         <h2 className="text-2xl md:text-3xl font-semibold text-white mb-4">
-          Oops! This page doesn't exist
+          Oops! This page doesn&apos;t exist
         </h2>
         <p className="text-lg text-gray-400 mb-8 max-w-md mx-auto">
-          The page you're looking for might have been removed, had its name changed, or is temporarily unavailable.
+          Sorry, we can&apos;t find the page you&apos;re looking for.
+
         </p>
 
         {/* Action Buttons */}
@@ -43,12 +45,12 @@ export default function NotFound() {
             Go Back
           </button>
           
-          <a 
+          <Link
             href="/" 
             className="group flex items-center gap-2 px-6 py-3 text-sm font-medium text-black bg-white rounded-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
             <Home className="w-4 h-4" />
             Return Home
-          </a>
+          </Link>
         </div>
 
         {/* Additional Help */}
