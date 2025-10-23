@@ -334,7 +334,7 @@ export default function Chatbot() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-6 right-6 z-50 max-w-sm"
+            className="fixed top-6 right-6  max-w-sm z-100"
           >
             <div className={`rounded-2xl p-4 shadow-2xl flex items-start gap-3 ${
               darkMode ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-200"

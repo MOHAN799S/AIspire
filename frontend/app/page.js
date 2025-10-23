@@ -4,10 +4,27 @@ import HowItWorks from "@/components/howitworks";
 import Testimonials from "@/components/testimonials";
 import Faqs from "@/components/faqs";
 import StartJourney from "@/components/calltoaction";
+import AdvancedCursor from "@/components/Cursor";
+import { Toaster } from "sonner";
+import { AuthListener } from "@/components/AuthListener";
 
 export default function Home() {
   return (
     <div>
+       <AuthListener />
+       <Toaster
+                     position="top-right"
+                     theme="dark"
+                     toastOptions={{
+                       style: {
+                         background: '#1a1a1a',
+                         border: '1px solid #333',
+                         color: '#fff',
+                         zIndex: 10000,
+                       },
+                       className: 'sonner-toast',
+                     }}
+                   />
       <div className="grid-backgorund"></div>
       <HeroSection />
       

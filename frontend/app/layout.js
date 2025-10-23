@@ -8,6 +8,7 @@ import { dark } from "@clerk/themes";
 import Chatbot from "@/components/Chat";
 import { Toaster } from "sonner";
 import { AuthListener } from "@/components/AuthListener";
+import AdvancedCursor from "@/components/Cursor";
 
 
 // Load fonts with variables
@@ -52,21 +53,12 @@ export default function RootLayout({ children }) {
             <AuthListener />
             
             {/* Toast Notifications */}
-            <Toaster
-              position="top-right"
-              theme="dark"
-              toastOptions={{
-                style: {
-                  background: '#1a1a1a',
-                  border: '1px solid #333',
-                  color: '#fff',
-                },
-                className: 'sonner-toast',
-              }}
-            />
+            
+
+            {/* <AdvancedCursor variant="minimal"></AdvancedCursor> */}
             
             {/* Header */}
-            <Header />
+            <Header className="cursor-pointer" />
             
             {/* Chatbot */}
             <Chatbot />

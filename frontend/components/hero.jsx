@@ -1,10 +1,11 @@
 'use client'
 import React, { useEffect, useRef } from 'react'
 import { Button } from './ui/button'
-import Link from 'next/link'
 import Image from 'next/image'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useUser } from '@clerk/nextjs'
+import { useRouter } from 'next/navigation'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -15,8 +16,18 @@ export const HeroSection = () => {
   const buttonRef = useRef(null)
   const sectionRef = useRef(null)
 
+  const { isSignedIn } = useUser()
+  const router = useRouter()
+
+  const handleGetStarted = () => {
+    if (isSignedIn) {
+      router.push('/dashboard')
+    } else {
+      router.push('/sign-up')
+    }
+  }
+
   useEffect(() => {
-    // Original scroll effect for image
     const imgRef = image.current
 
     const handleScroll = () => {
@@ -33,76 +44,24 @@ export const HeroSection = () => {
     window.addEventListener('scroll', handleScroll)
 
     const ctx = gsap.context(() => {
-      // Create timeline for sequential animations
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
-
-      // Title animation - split words with stagger
       tl.fromTo(
         titleRef.current,
-        {
-          opacity: 0,
-          y: 100,
-          scale: 0.8,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 1.2,
-          ease: 'back.out(1.4)',
-        }
+        { opacity: 0, y: 100, scale: 0.8 },
+        { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: 'back.out(1.4)' }
       )
-
-      // Subtitle animation - fade and slide from bottom
       tl.fromTo(
         subtitleRef.current,
-        {
-          opacity: 0,
-          y: 50,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-        },
-        '-=0.6' // Start before previous animation ends
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 0.8 },
+        '-=0.6'
       )
-
-      // Button animation - bounce in
       tl.fromTo(
         buttonRef.current,
-        {
-          opacity: 0,
-          scale: 0,
-        },
-        {
-          opacity: 1,
-          scale: 1,
-          duration: 0.6,
-          ease: 'elastic.out(1, 0.6)',
-        },
+        { opacity: 0, scale: 0 },
+        { opacity: 1, scale: 1, duration: 0.6, ease: 'elastic.out(1, 0.6)' },
         '-=0.4'
       )
-
-      // Button hover animation
-      const button = buttonRef.current
-      if (button) {
-        button.addEventListener('mouseenter', () => {
-          gsap.to(button, {
-            scale: 1.08,
-            duration: 0.3,
-            ease: 'power2.out',
-          })
-        })
-
-        button.addEventListener('mouseleave', () => {
-          gsap.to(button, {
-            scale: 1,
-            duration: 0.3,
-            ease: 'power2.out',
-          })
-        })
-      }
     }, sectionRef)
 
     return () => {
@@ -121,6 +80,7 @@ export const HeroSection = () => {
           >
             Your AI Companion for <br /> Smarter Career Growth
           </h1>
+
           <p
             ref={subtitleRef}
             className='mx-auto max-w-[600px] text-muted-foreground md:text-xl'
@@ -130,20 +90,29 @@ export const HeroSection = () => {
             cover letter tools — all powered by AI to help you stand out and
             succeed.
           </p>
+
           <div
             ref={buttonRef}
             className='flex items-center justify-center gap-4 space-x-4'
           >
-            <Link href='/dashboard'>
-              <Button size='lg' className='px-8 hover:cursor-pointer'>
-                Get Started
+            {/* 👇 Smart Redirect Button */}
+            <Button
+              size='lg'
+              className='px-8 hover:cursor-pointer'
+              onClick={handleGetStarted}
+            >
+              Get Started
+            </Button>
+
+            <a href='/files/demo.pptx' download>
+              <Button
+                size='lg'
+                variant='outline'
+                className='px-8 hover:cursor-pointer'
+              >
+                Download PPT
               </Button>
-            </Link>
-             <a href="/files/demo.pptx" download>
-    <Button size="lg" variant="outline" className="px-8 hover:cursor-pointer">
-      Download PPT
-    </Button>
-  </a>
+            </a>
           </div>
 
           <div className='hero-image-wrapper mt-5 md:mt-0 '>
