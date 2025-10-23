@@ -39,8 +39,8 @@ export const Header = () => {
                     {/* Dashboard Button */}
                     <Link href={`dashboard`}>
                         <Button 
-                          variant='ghost' 
-                          className='hover:bg-primary/10 hover:text-primary h-9 sm:h-10 px-1.5 sm:px-2 md:px-4'
+                          variant='outline' 
+                          className='hover:bg-primary/10 hover:text-primary h-9 sm:h-10 px-1.5 sm:px-2 md:px-4 hover:cursor-pointer'
                         >
                             <LayoutDashboard className='w-4 h-4' />
                             <span className='hidden sm:inline-block ml-2'>Dashboard</span>
@@ -51,8 +51,8 @@ export const Header = () => {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button 
-                              variant='ghost' 
-                              className='hover:bg-primary/10 hover:text-primary h-9 sm:h-10 px-2 sm:px-3 md:px-4 focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0'
+                              variant='outline' 
+                              className='hover:bg-primary/10 hover:text-primary h-9 sm:h-10 px-2 sm:px-3 md:px-4 focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 hover:cursor-pointer'
                             >
                                 <Sparkles className='w-4 h-4' />
                                 <span className='hidden sm:inline-block ml-1'>Growth Tools</span>
