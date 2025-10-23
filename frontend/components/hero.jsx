@@ -141,7 +141,7 @@ export const HeroSection = () => {
             </Link>
           </div>
 
-          <div className='hero-image-wrapper mt-5 md:mt-0 overflow-hidden'>
+          <div className='hero-image-wrapper mt-5 md:mt-0 '>
             <div ref={image} className='hero-image max-w-full'>
               <Image
                 src='/newbanner.png'
