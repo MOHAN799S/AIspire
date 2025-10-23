@@ -182,57 +182,57 @@ const HowItWorks = () => {
       });
 
       // For medium and larger devices - minimal GSAP
-      mm.add("(min-width: 768px)", () => {
-        // Simple fade in for title
-        gsap.fromTo(
-          titleRef.current,
-          { opacity: 0 },
-          {
-            opacity: 1,
-            duration: 0.6,
-            scrollTrigger: {
-              trigger: titleRef.current,
-              start: 'top 80%',
-              once: true,
-            },
-          }
-        );
+      // mm.add("(min-width: 768px)", () => {
+      //   // Simple fade in for title
+      //   gsap.fromTo(
+      //     titleRef.current,
+      //     { opacity: 0 },
+      //     {
+      //       opacity: 1,
+      //       duration: 0.6,
+      //       scrollTrigger: {
+      //         trigger: titleRef.current,
+      //         start: 'top 80%',
+      //         once: true,
+      //       },
+      //     }
+      //   );
 
-        // Simple fade in for subtitle
-        gsap.fromTo(
-          subtitleRef.current,
-          { opacity: 0 },
-          {
-            opacity: 1,
-            duration: 0.6,
-            delay: 0.2,
-            scrollTrigger: {
-              trigger: subtitleRef.current,
-              start: 'top 80%',
-              once: true,
-            },
-          }
-        );
+      //   // Simple fade in for subtitle
+      //   gsap.fromTo(
+      //     subtitleRef.current,
+      //     { opacity: 0 },
+      //     {
+      //       opacity: 1,
+      //       duration: 0.6,
+      //       delay: 0.2,
+      //       scrollTrigger: {
+      //         trigger: subtitleRef.current,
+      //         start: 'top 80%',
+      //         once: true,
+      //       },
+      //     }
+      //   );
 
-        // Simple fade in for cards
-        cardsRef.current.forEach((card) => {
-          if (card) {
-            gsap.fromTo(
-              card,
-              { opacity: 0 },
-              {
-                opacity: 1,
-                duration: 0.5,
-                scrollTrigger: {
-                  trigger: card,
-                  start: 'top 90%',
-                  once: true,
-                },
-              }
-            );
-          }
-        });
-      });
+      //   // Simple fade in for cards
+      //   cardsRef.current.forEach((card) => {
+      //     if (card) {
+      //       gsap.fromTo(
+      //         card,
+      //         { opacity: 0 },
+      //         {
+      //           opacity: 1,
+      //           duration: 0.5,
+      //           scrollTrigger: {
+      //             trigger: card,
+      //             start: 'top 90%',
+      //             once: true,
+      //           },
+      //         }
+      //       );
+      //     }
+      //   });
+      // });
 
       return () => mm.revert();
     }, sectionRef);

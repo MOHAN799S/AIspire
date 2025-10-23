@@ -6,6 +6,8 @@ import {
   TrendingUp,
   PenBox,
   GraduationCap,
+  BookOpen,
+  Route,
 } from 'lucide-react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -13,6 +15,14 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 const features = [
+  {
+  icon: Route, // or another relevant icon from lucide-react
+  title: 'Learning Path',
+  description:
+    'Follow a personalized learning journey with curated courses, skill assessments, and progress tracking to accelerate your career growth.',
+  badge: 'Guided',
+},
+
   {
     icon: FileText,
     title: 'AI-Powered Resume Generator',
@@ -115,7 +125,7 @@ const Features = () => {
                 opacity: 1,
                 duration: 0.5,
                 scrollTrigger: {
-                  trigger: card,
+                  trigger: ".feature-section",
                   start: 'top 10%',
                   end: 'top 5%',
                   once: true,
@@ -150,7 +160,7 @@ const Features = () => {
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => {
             const Icon = feature.icon
             return (

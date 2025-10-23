@@ -65,6 +65,15 @@ export const Header = () => {
                             </DropdownMenuLabel>
                             <DropdownMenuItem asChild>
                                 <Link href={`learning-path`} className='flex items-center gap-3 cursor-pointer py-2.5'>
+                                    <TrendingUp className='w-4 h-4 text-primary' />
+                                    <div className='flex flex-col'>
+                                        <span className='font-medium'>Industry Insights</span>
+      <span className='text-xs text-muted-foreground'>Trends & analytics</span>
+                                    </div>
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href={`learning-path`} className='flex items-center gap-3 cursor-pointer py-2.5'>
                                     <Route className='w-4 h-4 text-primary' />
                                     <div className='flex flex-col'>
                                         <span className='font-medium'>Learning Path</span>
