@@ -116,7 +116,8 @@ const Features = () => {
                 duration: 0.5,
                 scrollTrigger: {
                   trigger: card,
-                  start: 'top 90%',
+                  start: 'top 10%',
+                  end: 'top 5%',
                   once: true,
                 },
               }
