@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import 'tailwindcss';
+@import '@clerk/themes/shadcn.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -115,8 +117,98 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    will-change: auto;
   }
+  
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
   body {
     @apply bg-background text-foreground;
   }
+  
+  img,
+  video,
+  iframe {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+}
+
+.grid-backgorund {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.1) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  backdrop-filter: blur(10px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: -1;
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.grid-backgorund::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, transparent, rgba(0, 0, 0, 0.9));
+  backdrop-filter: blur(10px);
+}
+
+@layer utilities {
+  .gradient {
+    @apply bg-gradient-to-b from-gray-400 via-gray-200 to-gray-600;
+  }
+  .gradient-title {
+    @apply bg-gradient-to-b from-gray-400 via-gray-200 to-gray-600 font-extrabold tracking-tighter text-transparent bg-clip-text pb-2 pr-2;
+  }
+}
+
+.hero-image-wrapper {
+  perspective: 1000px;
+}
+
+.hero-image {
+  transform: rotateX(10deg) scale(1);
+  transition: transform 1s ease-out;
+  will-change: transform;
+}
+
+.hero-image.scrolled {
+  transform: rotateX(0) scale(1) translateY(40px);
+}
+
+/* ================================
+   CLERK MODAL Z-INDEX FIXES
+   ================================ */
+
+/* Clerk Modal Backdrop - Highest priority */
+
+/* Fade-Up Animation */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.8s ease-out forwards;
 }
