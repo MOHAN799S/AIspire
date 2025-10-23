@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50" viewBox="0 0 200 50" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#1fb6ff"/>
+      <stop offset="1" stop-color="#0077d9"/>
+    </linearGradient>
+  </defs>
+  <!-- Transparent background (no rect) -->
+  <!-- A (blue gradient) -->
+  <g transform="translate(8,5) scale(0.9)">
+    <path d="M18 36 L30 6 L42 36 Z" fill="url(#g)"/>
+    <!-- inner triangle hole -->
+    <path d="M26 28 L32 12 L38 28 Z" fill="white" opacity="0.12"/>
+    <!-- vertical 'I' shaped tie element to the right of A -->
+    <path d="M46 2 L54 2 L60 6 L58 8 L56 38 L52 38 L50 8 L48 6 Z" fill="url(#g)"/>
+    <!-- small arrow-shaped top for tie -->
+    <path d="M52 2 L58 2 L60 6 L52 6 Z" fill="url(#g)"/>
+  </g>
+
+  <!-- "spire" in white -->
+  <g transform="translate(88,12)">
+    <style>
+      .s { font: 26px 'Helvetica Neue', Arial, sans-serif; font-weight:700; letter-spacing:1px; }
+    </style>
+    <text x="0" y="22" class="s" fill="white">SPIRE</text>
+  </g>
+</svg>

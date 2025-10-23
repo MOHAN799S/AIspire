@@ -21,7 +21,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 export const Header = () => {
   return (
     <header className='fixed top-0 w-full border-b bg-background/80 backdrop-blur-md z-50 supports-[backdrop-filter]:bg-background/60'>
-        <nav className='container mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4'>
+        <nav className='mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 max-w-full h-16 flex items-center justify-between gap-4'>
             {/* Logo */}
             <Link href="/" className='flex-shrink-0'>
                 <Image 
@@ -29,18 +29,18 @@ export const Header = () => {
                   alt="InterviewPrep" 
                   width={80} 
                   height={80} 
-                  className='h-28 py-2 w-auto object-contain'
+                  className='h-28 py-2 w-auto object-contain md:left-0'
                 />
             </Link>
             
             {/* Navigation Items */}
-            <div className='flex items-center gap-1 sm:gap-2 md:gap-3'>
+            <div className='flex items-center gap-1 sm:gap-2 md:gap-3 ml-auto'>
                 <SignedIn>
                     {/* Dashboard Button */}
                     <Link href={`dashboard`}>
                         <Button 
                           variant='ghost' 
-                          className='hover:bg-primary/10 hover:text-primary h-9 sm:h-10 px-2 sm:px-3 md:px-4'
+                          className='hover:bg-primary/10 hover:text-primary h-9 sm:h-10 px-1.5 sm:px-2 md:px-4'
                         >
                             <LayoutDashboard className='w-4 h-4' />
                             <span className='hidden sm:inline-block ml-2'>Dashboard</span>
@@ -52,10 +52,10 @@ export const Header = () => {
                         <DropdownMenuTrigger asChild>
                             <Button 
                               variant='ghost' 
-                              className='hover:bg-primary/10 hover:text-primary h-9 sm:h-10 px-2 sm:px-3 md:px-4'
+                              className='hover:bg-primary/10 hover:text-primary h-9 sm:h-10 px-2 sm:px-3 md:px-4 focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0'
                             >
                                 <Sparkles className='w-4 h-4' />
-                                <span className='hidden sm:inline-block ml-2'>Growth Tools</span>
+                                <span className='hidden sm:inline-block ml-1'>Growth Tools</span>
                                 <ChevronDown className='w-4 h-4 ml-1' />
                             </Button>
                         </DropdownMenuTrigger>
