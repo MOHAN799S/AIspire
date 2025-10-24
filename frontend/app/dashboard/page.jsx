@@ -238,7 +238,7 @@ useEffect(() => {
             <h1 ref={titleRef} className="text-5xl md:text-6xl font-bold lg:text-7xl xl:text-8xl gradient-title">
               Dashboard Overview
             </h1>
-            <p ref={subtitleRef} className="mt-3 text-xl sm:text-2xl lg:text-3xl text-gray-600 dark:text-gray-400">
+            <p ref={subtitleRef} className="mt-3 mb-10 text-xl sm:text-2xl lg:text-3xl text-gray-600 dark:text-gray-400">
               Track your progress and analytics
             </p>
           </div>
