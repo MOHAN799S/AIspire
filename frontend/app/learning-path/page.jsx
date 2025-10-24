@@ -200,7 +200,7 @@ const LearningPathsCard = () => {
           <p className="text-gray-400 text-lg sm:text-xl lg:text-2xl">Choose your path and start learning today</p>
         </div>
 
-        <div className="space-y-8 lg:space-y-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="space-y-8 lg:space-y-16 grid-1 grid-cols-1 md:grid-cols-2 gap-8">
           {paths.map((path, index) => {
             const isEven = index % 2 === 0
             const isVisible = visibleCards.has(path.id.toString())
