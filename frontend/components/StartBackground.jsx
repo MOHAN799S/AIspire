@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
+import { gsap } from 'gsap'
 
 export default function StarBackground() {
   const canvasRef = useRef(null)
@@ -40,24 +41,33 @@ export default function StarBackground() {
     }
 
     starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3))
+
     const starMaterial = new THREE.PointsMaterial({
       color: 0xffffff,
       size: 0.6,
       sizeAttenuation: true,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0, // start hidden
     })
 
     const stars = new THREE.Points(starGeometry, starMaterial)
     scene.add(stars)
 
-    // 📜 Scroll-based movement
+    // ✨ Fade-in animation (GSAP)
+    gsap.to(starMaterial, {
+      opacity: 0.8,
+      duration: 2.5,
+      ease: 'power2.out',
+      delay: 0.5,
+    })
+
+    // 📜 Scroll-based parallax motion
     const handleScroll = () => {
       scrollY.current = window.scrollY
     }
     window.addEventListener('scroll', handleScroll)
 
-    // 🎞 Animation
+    // 🎞 Animation loop
     const clock = new THREE.Clock()
     const animate = () => {
       requestAnimationFrame(animate)
@@ -72,7 +82,7 @@ export default function StarBackground() {
     }
     animate()
 
-    // 🔁 Resize (and orientation change)
+    // 🔁 Resize + orientation
     window.addEventListener('resize', setSize)
     window.addEventListener('orientationchange', setSize)
 
@@ -89,7 +99,7 @@ export default function StarBackground() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-40 dark:opacity-50"
+      className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-100 dark:opacity-100"
       style={{ height: '100vh', width: '100vw' }}
     />
   )
