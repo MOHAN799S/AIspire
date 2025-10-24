@@ -33,7 +33,7 @@ export default function StarBackground() {
     camera.position.z = 1
 
     // 🌌 Create stars
-    const starCount = 2000
+    const starCount = 1000
     const starGeometry = new THREE.BufferGeometry()
     const starPositions = new Float32Array(starCount * 3)
     for (let i = 0; i < starCount * 3; i++) {
