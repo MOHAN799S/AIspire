@@ -47,6 +47,39 @@ function formatTimestamp(timestamp) {
   return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
+// Format date separator
+function formatDateSeparator(timestamp) {
+  const date = new Date(timestamp);
+  const now = new Date();
+  
+  // Today
+  if (date.toDateString() === now.toDateString()) {
+    return "Today";
+  }
+  
+  // Yesterday
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (date.toDateString() === yesterday.toDateString()) {
+    return "Yesterday";
+  }
+  
+  // This year
+  if (date.getFullYear() === now.getFullYear()) {
+    return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  }
+  
+  // Other years
+  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+// Check if two timestamps are on different days
+function isDifferentDay(timestamp1, timestamp2) {
+  const date1 = new Date(timestamp1);
+  const date2 = new Date(timestamp2);
+  return date1.toDateString() !== date2.toDateString();
+}
+
 // Status component
 function MessageStatus({ status, darkMode }) {
   if (status === 'sending') {
@@ -524,51 +557,66 @@ export default function Chatbot() {
               ) : null}
 
               {messages.map((m, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                  className={`flex flex-col ${m.sender === "user" ? "items-end" : "items-start"}`}
-                >
-                  <div className={`flex items-end gap-2 ${m.sender === "user" ? "flex-row-reverse" : "flex-row"}`}>
-                    {m.sender === "bot" ? (
-                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 shadow-md">
-                        <Bot size={16} className="text-white" />
+                <div key={idx}>
+                  {/* Date Separator */}
+                  {(idx === 0 || isDifferentDay(messages[idx - 1].timestamp, m.timestamp)) && (
+                    <div className="flex items-center justify-center my-6">
+                      <div className={`px-4 py-1.5 rounded-full text-xs font-medium ${
+                        darkMode 
+                          ? "bg-gray-800/80 text-gray-400 border border-gray-700/50" 
+                          : "bg-white/80 text-gray-600 border border-gray-200/50"
+                      }`}>
+                        {formatDateSeparator(m.timestamp)}
                       </div>
-                    ) : (
-                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center flex-shrink-0 shadow-md">
-                        <User size={16} className="text-white" />
-                      </div>
-                    )}
-
-                    <div
-                      className={`px-4 py-3 rounded-2xl max-w-[75%] text-sm shadow-md break-words ${
-                        m.sender === "user"
-                          ? darkMode
-                            ? "bg-gradient-to-br from-indigo-600 to-purple-600 text-white"
-                            : "bg-gradient-to-br from-indigo-500 to-purple-500 text-white"
-                          : darkMode
-                          ? "bg-gray-800 text-gray-100"
-                          : "bg-white text-gray-900"
-                      }`}
-                    >
-                      {m.text}
                     </div>
-                  </div>
-                  
-                  {/* Timestamp and Status */}
-                  <div className={`flex items-center gap-1.5 mt-1 px-2 ${
-                    m.sender === "user" ? "flex-row-reverse" : "flex-row"
-                  }`}>
-                    <span className={`text-xs ${darkMode ? "text-gray-500" : "text-gray-400"}`}>
-                      {formatTimestamp(m.timestamp)}
-                    </span>
-                    {m.sender === "user" && m.status && (
-                      <MessageStatus status={m.status} darkMode={darkMode} />
-                    )}
-                  </div>
-                </motion.div>
+                  )}
+
+                  {/* Message */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className={`flex flex-col ${m.sender === "user" ? "items-end" : "items-start"}`}
+                  >
+                    <div className={`flex items-end gap-2 ${m.sender === "user" ? "flex-row-reverse" : "flex-row"}`}>
+                      {m.sender === "bot" ? (
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 shadow-md">
+                          <Bot size={16} className="text-white" />
+                        </div>
+                      ) : (
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center flex-shrink-0 shadow-md">
+                          <User size={16} className="text-white" />
+                        </div>
+                      )}
+
+                      <div
+                        className={`px-4 py-3 rounded-2xl max-w-[75%] text-sm shadow-md break-words ${
+                          m.sender === "user"
+                            ? darkMode
+                              ? "bg-gradient-to-br from-indigo-600 to-purple-600 text-white"
+                              : "bg-gradient-to-br from-indigo-500 to-purple-500 text-white"
+                            : darkMode
+                            ? "bg-gray-800 text-gray-100"
+                            : "bg-white text-gray-900"
+                        }`}
+                      >
+                        {m.text}
+                      </div>
+                    </div>
+                    
+                    {/* Timestamp and Status */}
+                    <div className={`flex items-center gap-1.5 mt-1 px-2 ${
+                      m.sender === "user" ? "flex-row-reverse" : "flex-row"
+                    }`}>
+                      <span className={`text-xs ${darkMode ? "text-gray-500" : "text-gray-400"}`}>
+                        {formatTimestamp(m.timestamp)}
+                      </span>
+                      {m.sender === "user" && m.status && (
+                        <MessageStatus status={m.status} darkMode={darkMode} />
+                      )}
+                    </div>
+                  </motion.div>
+                </div>
               ))}
 
               {isTyping && (
