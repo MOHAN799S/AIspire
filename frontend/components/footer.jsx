@@ -1,10 +1,12 @@
 import React from 'react'
 import Link from 'next/link'
 import { ExternalLink } from 'lucide-react'
+import StarBackground from './StartBackground'
 
 const Footer = () => {
   return (
     <footer className="relative bg-muted/50 py-10 border-t z-10">
+      <StarBackground />
       <div className="container mx-auto px-4">
         <div className="text-center space-y-2">
           <p className="text-md text-foreground">

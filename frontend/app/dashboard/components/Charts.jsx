@@ -23,6 +23,7 @@ import {
   Area,
   ComposedChart,
 } from 'recharts'
+import StarBackground from '@/components/StartBackground'
 
 // Register GSAP plugins
 if (typeof window !== 'undefined') {
@@ -226,6 +227,7 @@ export default function Charts() {
 
   return (
     <section ref={sectionRef} className="py-8 sm:py-12 lg:py-16 dark:bg-black">
+        <StarBackground className='z-999'/>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         {/* GRID WRAPPER */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
