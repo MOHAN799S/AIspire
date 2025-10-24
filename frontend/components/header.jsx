@@ -70,7 +70,7 @@ export const Header = () => {
                                 Career Development
                             </DropdownMenuLabel>
                             <DropdownMenuItem asChild>
-                                <Link href={`learning-path`} className='flex items-center gap-3 cursor-pointer py-2.5'>
+                                <Link href={`industry-insights`} className='flex items-center gap-3 cursor-pointer py-2.5'>
                                     <TrendingUp className='w-4 h-4 text-primary' />
                                     <div className='flex flex-col'>
                                         <span className='font-medium'>Industry Insights</span>
@@ -118,7 +118,7 @@ export const Header = () => {
                     </DropdownMenu>
 
                     {/* User Profile */}
-                    <UserButton 
+                    <UserButton
                         appearance={{
                             elements: {
                                 avatarBox: 'w-9 h-9 sm:w-10 sm:h-10',
