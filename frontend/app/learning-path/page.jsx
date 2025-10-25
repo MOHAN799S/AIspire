@@ -228,7 +228,8 @@ const LearningPathsCard = () => {
                   <Search className="w-12 h-12 text-gray-500 mx-auto mb-3" />
                   <p className="text-gray-400 font-medium mb-1">No learning paths found</p>
                   <p className="text-sm text-gray-500">
-                    Try searching with different keywords like "Python", "Beginner", or "Web Development"
+                   Try searching with different keywords like &quot;Python&quot;, &quot;Beginner&quot;, or &quot;Web Development&quot;.
+
                   </p>
                 </div>
               )}
