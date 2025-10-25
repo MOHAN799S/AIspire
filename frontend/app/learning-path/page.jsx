@@ -1,7 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
-import * as THREE from 'three'
+import React, { useEffect, useState } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import {
@@ -17,16 +16,79 @@ import {
   AccordionContent
 } from '@/components/ui/accordion'
 import { Learningpaths } from '@/components/data'
-import { BookOpen, FileText, Loader2 } from 'lucide-react'
+import { BookOpen, FileText, Loader2, ChevronLeft, ChevronRight, Search, X } from 'lucide-react'
+
 const LearningPathsCard = () => {
   const { isSignedIn, isLoaded } = useUser()
   const router = useRouter()
-  const canvasRef = useRef(null)
-  const containerRef = useRef(null)
   const [pageLoading, setPageLoading] = useState(true)
   const [visibleCards, setVisibleCards] = useState(new Set())
+  const [currentPage, setCurrentPage] = useState(1)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState([])
+  const [showSearchResults, setShowSearchResults] = useState(false)
+  const itemsPerPage = 4
 
-  const paths = Learningpaths // Import paths data
+  const paths = Learningpaths
+
+  // Search functionality
+  const handleSearch = (query) => {
+    setSearchQuery(query)
+    
+    if (query.trim() === '') {
+      setSearchResults([])
+      setShowSearchResults(false)
+      return
+    }
+
+    const lowerQuery = query.toLowerCase()
+    const results = paths
+      .map((path, index) => {
+        // Search in title, description, difficulty, and syllabus topics
+        const titleMatch = path.title.toLowerCase().includes(lowerQuery)
+        const descMatch = path.description.toLowerCase().includes(lowerQuery)
+        const difficultyMatch = path.difficulty.toLowerCase().includes(lowerQuery)
+        const topicsMatch = path.syllabus.some(module => 
+          module.module.toLowerCase().includes(lowerQuery) ||
+          module.topics.some(topic => topic.toLowerCase().includes(lowerQuery))
+        )
+
+        if (titleMatch || descMatch || difficultyMatch || topicsMatch) {
+          const pageNumber = Math.floor(index / itemsPerPage) + 1
+          const cardNumber = (index % itemsPerPage) + 1
+          return {
+            ...path,
+            pageNumber,
+            cardNumber,
+            absoluteIndex: index
+          }
+        }
+        return null
+      })
+      .filter(Boolean)
+
+    setSearchResults(results)
+    setShowSearchResults(true)
+  }
+
+  const navigateToPath = (pageNumber) => {
+    setSearchQuery('')
+    setShowSearchResults(false)
+    handlePageChange(pageNumber)
+  }
+
+  const clearSearch = () => {
+    setSearchQuery('')
+    setSearchResults([])
+    setShowSearchResults(false)
+  }
+
+  // Calculate pagination
+  const totalPages = Math.ceil(paths.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const currentPaths = paths.slice(startIndex, endIndex)
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) router.push('/sign-in')
@@ -57,123 +119,24 @@ const LearningPathsCard = () => {
     cards.forEach((card) => observer.observe(card))
 
     return () => observer.disconnect()
-  }, [pageLoading])
+  }, [pageLoading, currentPage])
 
-  useEffect(() => {
-    if (!canvasRef.current || !containerRef.current || pageLoading) return
-
-    const container = containerRef.current
-    const scene = new THREE.Scene()
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      container.clientWidth / container.clientHeight,
-      0.1,
-      1000
-    )
-    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, alpha: true, antialias: true })
-    renderer.setSize(container.clientWidth, container.clientHeight)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    camera.position.z = 5
-
-    // Particles
-    const particlesCount = window.innerWidth < 768 ? 400 : 800
-    const positions = new Float32Array(particlesCount * 3)
-    for (let i = 0; i < particlesCount * 3; i++) positions[i] = (Math.random() - 0.5) * 15
-
-    const particlesGeometry = new THREE.BufferGeometry()
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-    const particlesMaterial = new THREE.PointsMaterial({ size: 0.04, color: 0xffffff, transparent: true, opacity: 0.35 })
-    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial)
-    scene.add(particlesMesh)
-
-    // createWireframe
-    const createWireframe = (geometry, color, opacity, position) => {
-      const material = new THREE.MeshBasicMaterial({ color, wireframe: true, transparent: true, opacity })
-      const mesh = new THREE.Mesh(geometry, material)
-      mesh.position.copy(position)
-      scene.add(mesh)
-      return mesh
-    }
-
-    const torus = createWireframe(new THREE.TorusGeometry(1, 0.3, 8, 50), 0xffffff, 0.2, new THREE.Vector3(-2, 2, 0))
-    const octahedron = createWireframe(new THREE.OctahedronGeometry(1.1), 0xffffff, 0.15, new THREE.Vector3(2, -2, -1))
-
-    scene.add(new THREE.AmbientLight(0xffffff, 0.5))
-
-    // Mouse + scroll
-    let mouseX = 0, mouseY = 0, targetMouseX = 0, targetMouseY = 0
-    let scrollY = window.scrollY
-
-    const handleMouseMove = (e) => {
-      const rect = container.getBoundingClientRect()
-      targetMouseX = ((e.clientX - rect.left) / rect.width) * 2 - 1
-      targetMouseY = -((e.clientY - rect.top) / rect.height) * 2 + 1
-    }
-
-    const handleScroll = () => {
-      scrollY = window.scrollY
-    }
-
-    container.addEventListener('mousemove', handleMouseMove)
-    window.addEventListener('scroll', handleScroll)
-
-    // Animation loop
-    const clock = new THREE.Clock()
-    const isMobile = window.innerWidth < 768
-    let lastFrameTime = 0
-    const targetFPS = isMobile ? 30 : 60
-    const frameInterval = 1000 / targetFPS
-
-    const animate = (currentTime) => {
-      requestAnimationFrame(animate)
-
-      if (currentTime - lastFrameTime < frameInterval) return
-      lastFrameTime = currentTime
-
-      const delta = clock.getDelta()
-      const easeFactor = isMobile ? 0.03 : 0.05
-
-      mouseX += (targetMouseX - mouseX) * easeFactor
-      mouseY += (targetMouseY - mouseY) * easeFactor
-
-      const scrollOffset = scrollY * (isMobile ? 0.0004 : 0.0008)
-
-      particlesMesh.rotation.y += delta * 0.08
-      torus.rotation.x += delta * 0.25
-      torus.rotation.y += delta * 0.18
-      octahedron.rotation.x += delta * 0.15
-      octahedron.rotation.y += delta * 0.22
-
-      const parallaxStrength = isMobile ? 0.3 : 0.5
-      camera.position.x += (mouseX * parallaxStrength - camera.position.x) * easeFactor
-      camera.position.y += (mouseY * parallaxStrength - camera.position.y) * easeFactor
-      camera.position.z = 5 + scrollOffset * (isMobile ? 20 : 30)
-
-      camera.lookAt(scene.position)
-      renderer.render(scene, camera)
-    }
-    animate(0)
-
-    // Resize
-    const handleResize = () => {
-      renderer.setSize(container.clientWidth, container.clientHeight)
-      camera.aspect = container.clientWidth / container.clientHeight
-      camera.updateProjectionMatrix()
-    }
-
-    window.addEventListener('resize', handleResize)
-
-    // Cleanup
-    return () => {
-      window.removeEventListener('resize', handleResize)
-      window.removeEventListener('scroll', handleScroll)
-      container.removeEventListener('mousemove', handleMouseMove)
-      renderer.dispose()
-      particlesGeometry.dispose()
-      scene.clear()
-    }
-  }, [pageLoading])
-
+  // Handle page change with smooth transition
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages || isTransitioning) return
+    
+    setIsTransitioning(true)
+    setVisibleCards(new Set())
+    
+    setTimeout(() => {
+      setCurrentPage(newPage)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      
+      setTimeout(() => {
+        setIsTransitioning(false)
+      }, 100)
+    }, 300)
+  }
 
   if (pageLoading || !isLoaded) {
     return (
@@ -187,24 +150,100 @@ const LearningPathsCard = () => {
   if (!isSignedIn) return null
 
   return (
-    <section ref={containerRef} className="relative bg-black text-white min-h-screen overflow-hidden py-16">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
-      {/* Timeline line for larger screens */}
-      {/* <div className="hidden lg:block absolute left-1/2 top-68 bottom-0 w-0.5  transform -translate-x-1/2" /> */}
-
+    <section className="relative bg-black text-white min-h-screen overflow-hidden py-16">
       <div className="relative z-10 container mx-auto px-4 max-w-7xl">
-        <div className="text-center mb-16">
-          <h2 className="gradient-title text-5xl sm:text-6xl lg:text-7xl font-bold mb-4 mt-20  bg-clip-text text-transparent">
+        <div className="text-center mb-8">
+          <h2 className="gradient-title text-5xl sm:text-6xl lg:text-7xl font-bold mb-4 mt-20 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
             Learning Paths
           </h2>
           <p className="text-gray-400 text-lg sm:text-xl lg:text-2xl">Choose your path and start learning today</p>
+          <div className="mt-4 text-sm text-gray-500">
+            Page {currentPage} of {totalPages} • {paths.length} total paths
+          </div>
         </div>
 
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-8">
+        {/* Search Bar */}
+        <div className="max-w-2xl mx-auto mb-12 relative">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
+              placeholder="Search learning paths by title, topic, or difficulty..."
+              className="w-full pl-12 pr-12 py-4 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:black focus:border-transparent transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={clearSearch}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
 
-          {paths.map((path, index) => {
-            const isEven = index % 2 === 0
+          {/* Search Results Dropdown */}
+          {showSearchResults && (
+            <div className="absolute w-full mt-2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg shadow-2xl max-h-96 overflow-y-auto z-50">
+              {searchResults.length > 0 ? (
+                <div className="p-2">
+                  {searchResults.map((result) => (
+                    <button
+                      key={result.id}
+                      onClick={() => navigateToPath(result.pageNumber)}
+                      className="w-full text-left p-4 hover:bg-white/10 rounded-lg transition-all group"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-white group-hover:text-blue-400 transition-colors mb-1">
+                            {result.title}
+                          </h3>
+                          <p className="text-sm text-gray-400 line-clamp-2 mb-2">
+                            {result.description}
+                          </p>
+                          <div className="flex flex-wrap gap-2 text-xs">
+                            <span className="bg-blue-500/20 text-blue-300 px-2 py-1 rounded">
+                              {result.difficulty}
+                            </span>
+                            <span className="bg-purple-500/20 text-purple-300 px-2 py-1 rounded">
+                              {result.duration}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-1 text-xs text-gray-400 flex-shrink-0">
+                          <span className="bg-white/10 px-2 py-1 rounded">
+                            Page {result.pageNumber}
+                          </span>
+                          <span className="bg-white/10 px-2 py-1 rounded">
+                            Card {result.cardNumber}
+                          </span>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-8 text-center">
+                  <Search className="w-12 h-12 text-gray-500 mx-auto mb-3" />
+                  <p className="text-gray-400 font-medium mb-1">No learning paths found</p>
+                  <p className="text-sm text-gray-500">
+                    Try searching with different keywords like "Python", "Beginner", or "Web Development"
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className={`
+          grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-8 mb-12
+          transition-opacity duration-300
+          ${isTransitioning ? 'opacity-0' : 'opacity-100'}
+        `}>
+          {currentPaths.map((path, index) => {
             const isVisible = visibleCards.has(path.id.toString())
+            const isEven = index % 2 === 0
             
             return (
               <div
@@ -216,32 +255,23 @@ const LearningPathsCard = () => {
                   ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}
                 `}
                 style={{
-                  transitionDelay: `${(index % 3) * 100}ms`
+                  transitionDelay: `${(index % 6) * 100}ms`
                 }}
               >
-                {/* Timeline dot for larger screens */}
-                {/* <div className="hidden lg:block absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
-                  <div className={`
-                    w-6 h-6 rounded-full border-4 border-white/85
-                    ${isVisible ? 'scale-100 bg-gradient-to-br from-gray-200 to-gray-400' : 'scale-0 bg-gray-500'}
-                    transition-all duration-500 ease-out shadow-lg shadow-white/80
-                  `} style={{ transitionDelay: '200ms' }} />
-                </div> */}
-
-                {/* Card container */}
                 <div className={`
                   w-full lg:w-[48%]
                   ${isEven ? 'lg:pr-12' : 'lg:pl-12'}
                 `}>
                   <Card
                     className={`
-                      bg-white/5 backdrop-blur-md border border-white/10 
-                      hover:bg-white/10 hover:border-white/20 hover:shadow-2xl hover:shadow-white/25 md:flex-2
-                      transition-all duration-500 group
+                      bg-white/5 backdrop-blur-md border border-white/10
+                      hover:scale-110 transition-transform duration-300
+                      ease-[cubic-bezier(0.4,0,0.2,1)]
+                      group h-full
                       ${isVisible ? 'scale-100' : 'scale-95'}
                     `}
                     style={{
-                      transitionDelay: `${300 + (index % 3) * 100}ms`
+                      transitionDelay: `${300 + (index % 6) * 100}ms`
                     }}
                   >
                     <CardHeader className="border-b border-white/10">
@@ -328,16 +358,133 @@ const LearningPathsCard = () => {
                           </AccordionContent>
                         </AccordionItem>
                       </Accordion>
-
-                      {/* <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
-                        Start Learning
-                      </button> */}
                     </CardContent>
                   </Card>
                 </div>
               </div>
             )
           })}
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mt-12 mb-8 px-4">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1 || isTransitioning}
+            className={`
+              flex items-center justify-center gap-2 px-3 sm:px-6 py-3 rounded-lg font-medium
+              transition-all duration-300 transform flex-shrink-0
+              ${currentPage === 1 || isTransitioning
+                ? 'bg-white/5 text-gray-600 cursor-not-allowed'
+                : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white hover:scale-105 hover:shadow-lg hover:shadow-blue-500/50'
+              }
+            `}
+          >
+            <ChevronLeft className="w-5 h-5" />
+            <span className="hidden sm:inline">Previous</span>
+          </button>
+
+          <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-center">
+            {totalPages <= 7 ? (
+              Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  disabled={isTransitioning}
+                  className={`
+                    w-9 h-9 sm:w-10 sm:h-10 rounded-lg font-medium transition-all duration-300 text-sm sm:text-base
+                    ${page === currentPage
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white scale-110 shadow-lg shadow-blue-500/50'
+                      : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                    }
+                    ${isTransitioning ? 'cursor-not-allowed opacity-50' : ''}
+                  `}
+                >
+                  {page}
+                </button>
+              ))
+            ) : (
+              <>
+                <button
+                  onClick={() => handlePageChange(1)}
+                  disabled={isTransitioning}
+                  className={`
+                    w-9 h-9 sm:w-10 sm:h-10 rounded-lg font-medium transition-all duration-300 text-sm sm:text-base
+                    ${currentPage === 1
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white scale-110 shadow-lg shadow-blue-500/50'
+                      : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                    }
+                    ${isTransitioning ? 'cursor-not-allowed opacity-50' : ''}
+                  `}
+                >
+                  1
+                </button>
+
+                {currentPage > 3 && (
+                  <span className="text-gray-500 px-1">...</span>
+                )}
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(page => {
+                    if (page === 1 || page === totalPages) return false
+                    return Math.abs(page - currentPage) <= 1
+                  })
+                  .map(page => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      disabled={isTransitioning}
+                      className={`
+                        w-9 h-9 sm:w-10 sm:h-10 rounded-lg font-medium transition-all duration-300 text-sm sm:text-base
+                        ${page === currentPage
+                          ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white scale-110 shadow-lg shadow-blue-500/50'
+                          : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                        }
+                        ${isTransitioning ? 'cursor-not-allowed opacity-50' : ''}
+                      `}
+                    >
+                      {page}
+                    </button>
+                  ))
+                }
+
+                {currentPage < totalPages - 2 && (
+                  <span className="text-gray-500 px-1">...</span>
+                )}
+
+                <button
+                  onClick={() => handlePageChange(totalPages)}
+                  disabled={isTransitioning}
+                  className={`
+                    w-9 h-9 sm:w-10 sm:h-10 rounded-lg font-medium transition-all duration-300 text-sm sm:text-base
+                    ${currentPage === totalPages
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white scale-110 shadow-lg shadow-blue-500/50'
+                      : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                    }
+                    ${isTransitioning ? 'cursor-not-allowed opacity-50' : ''}
+                  `}
+                >
+                  {totalPages}
+                </button>
+              </>
+            )}
+          </div>
+
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages || isTransitioning}
+            className={`
+              flex items-center justify-center gap-2 px-3 sm:px-6 py-3 rounded-lg font-medium
+              transition-all duration-300 transform flex-shrink-0
+              ${currentPage === totalPages || isTransitioning
+                ? 'bg-white/5 text-gray-600 cursor-not-allowed'
+                : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white hover:scale-105 hover:shadow-lg hover:shadow-blue-500/50'
+              }
+            `}
+          >
+            <span className="hidden sm:inline">Next</span>
+            <ChevronRight className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </section>
