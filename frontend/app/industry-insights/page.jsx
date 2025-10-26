@@ -227,10 +227,10 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
       })
 
       gsap.from('.subtitle', {
-        opacity: 0,
-        y: 20,
+        opacity: 1,
+        y: 30,
         duration: 1,
-        delay: 0.3,
+        delay: 0.4,
         ease: 'power3.out',
       })
 
@@ -383,15 +383,14 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8 sm:mb-12 mt-8 sm:mt-16 lg:mt-20">
           <h1
-            ref={headerRef}
-            className="gradient-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent mb-3 sm:mb-4"
-            style={{
-              backgroundImage: 'linear-gradient(to right, #ffffff, #cccccc)'
-            }}
-          >
-            Industry Insights Dashboard
-          </h1>
-          <p className="subtitle text-sm sm:text-base text-gray-400">Real-time technology industry trends and analytics</p>
+  ref={headerRef}
+  className="text-5xl md:text-6xl font-bold lg:text-7xl xl:text-8xl gradient-title mt-10"
+>
+  Industry Insights Dashboard
+</h1>
+<p className="mt-3 mb-10 text-xl sm:text-2xl lg:text-3xl text-gray-600 dark:text-gray-400 subtitle">
+  Real-time technology industry trends and analytics
+</p>
         </div>
 
         <div ref={metricsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
