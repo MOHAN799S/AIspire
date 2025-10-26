@@ -264,103 +264,103 @@ const LearningPathsCard = () => {
                   ${isEven ? 'lg:pr-12' : 'lg:pl-12'}
                 `}>
                   <Card
-                    className={`
-                      bg-white/5 backdrop-blur-md border border-white/10
-                      hover:scale-110 transition-transform duration-300
-                      ease-[cubic-bezier(0.4,0,0.2,1)]
-                      group h-full
-                      ${isVisible ? 'scale-100' : 'scale-95'}
-                    `}
-                    style={{
-                      transitionDelay: `${300 + (index % 6) * 100}ms`
-                    }}
-                  >
-                    <CardHeader className="border-b border-white/10">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="p-2 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg group-hover:from-blue-500/30 group-hover:to-purple-500/30 transition-all">
-                          {path.icon}
-                        </div>
-                        <CardTitle className="text-lg sm:text-xl">{path.title}</CardTitle>
-                      </div>
-                      <p className="text-sm text-gray-400">{path.description}</p>
-                    </CardHeader>
+  className={`
+    bg-white/5 backdrop-blur-md border border-white/10
+    hover:scale-[1.02] hover:border-white/20 hover:shadow-lg hover:shadow-blue-500/10
+    transition-all duration-200 ease-out
+    group h-full
+    ${isVisible ? 'scale-100' : 'scale-95'}
+  `}
+  style={{
+    transitionDelay: `${300 + (index % 6) * 100}ms`
+  }}
+>
+  <CardHeader className="border-b border-white/10">
+    <div className="flex items-center gap-3 mb-2">
+      <div className="p-2 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg group-hover:from-blue-500/30 group-hover:to-purple-500/30 transition-colors duration-200">
+        {path.icon}
+      </div>
+      <CardTitle className="text-lg sm:text-xl">{path.title}</CardTitle>
+    </div>
+    <p className="text-sm text-gray-400">{path.description}</p>
+  </CardHeader>
 
-                    <CardContent className="p-4 sm:p-5 space-y-4">
-                      <div className="flex gap-3">
-                        <div className="flex-1 bg-white/5 p-3 rounded-lg border border-white/10 hover:bg-white/10 transition-all">
-                          <p className="text-xs text-gray-500">Duration</p>
-                          <p className="text-sm font-medium">{path.duration}</p>
-                        </div>
-                        <div className="flex-1 bg-white/5 p-3 rounded-lg border border-white/10 hover:bg-white/10 transition-all">
-                          <p className="text-xs text-gray-500">Level</p>
-                          <p className="text-sm font-medium">{path.difficulty}</p>
-                        </div>
-                      </div>
+  <CardContent className="p-4 sm:p-5 space-y-4">
+    <div className="flex gap-3">
+      <div className="flex-1 bg-white/5 p-3 rounded-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-colors duration-150">
+        <p className="text-xs text-gray-500">Duration</p>
+        <p className="text-sm font-medium">{path.duration}</p>
+      </div>
+      <div className="flex-1 bg-white/5 p-3 rounded-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-colors duration-150">
+        <p className="text-xs text-gray-500">Level</p>
+        <p className="text-sm font-medium">{path.difficulty}</p>
+      </div>
+    </div>
 
-                      <Accordion type="single" collapsible className="space-y-3">
-                        <AccordionItem
-                          value={`syllabus-${path.id}`}
-                          className="border border-white/10 rounded-lg bg-white/5 hover:bg-white/10 transition-all"
-                        >
-                          <AccordionTrigger className="px-4 py-2 text-sm font-medium">
-                            <div className="flex items-center gap-2">
-                              <BookOpen className="w-4 h-4 text-gray-400" />
-                              <span>Syllabus</span>
-                            </div>
-                          </AccordionTrigger>
-                          <AccordionContent className="p-3 space-y-3">
-                            {path.syllabus.map((module, idx) => (
-                              <Accordion key={idx} type="single" collapsible>
-                                <AccordionItem
-                                  value={`module-${path.id}-${idx}`}
-                                  className="bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-all"
-                                >
-                                  <AccordionTrigger className="px-3 py-2 text-xs font-medium">
-                                    {module.module}
-                                  </AccordionTrigger>
-                                  <AccordionContent className="p-3">
-                                    <div className="flex flex-wrap gap-2">
-                                      {module.topics.map((topic, tIdx) => (
-                                        <span key={tIdx} className="text-xs bg-white/10 hover:bg-white/20 px-2 py-1 rounded transition-all">
-                                          {topic}
-                                        </span>
-                                      ))}
-                                    </div>
-                                  </AccordionContent>
-                                </AccordionItem>
-                              </Accordion>
-                            ))}
-                          </AccordionContent>
-                        </AccordionItem>
+    <Accordion type="single" collapsible className="space-y-3">
+      <AccordionItem
+        value={`syllabus-${path.id}`}
+        className="border border-white/10 rounded-lg bg-white/5 hover:bg-white/10 hover:border-white/20 transition-colors duration-150"
+      >
+        <AccordionTrigger className="px-4 py-2 text-sm font-medium">
+          <div className="flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-gray-400" />
+            <span>Syllabus</span>
+          </div>
+        </AccordionTrigger>
+        <AccordionContent className="p-3 space-y-3">
+          {path.syllabus.map((module, idx) => (
+            <Accordion key={idx} type="single" collapsible>
+              <AccordionItem
+                value={`module-${path.id}-${idx}`}
+                className="bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-colors duration-150"
+              >
+                <AccordionTrigger className="px-3 py-2 text-xs font-medium">
+                  {module.module}
+                </AccordionTrigger>
+                <AccordionContent className="p-3">
+                  <div className="flex flex-wrap gap-2">
+                    {module.topics.map((topic, tIdx) => (
+                      <span key={tIdx} className="text-xs bg-white/10 hover:bg-white/20 px-2 py-1 rounded transition-colors duration-150">
+                        {topic}
+                      </span>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          ))}
+        </AccordionContent>
+      </AccordionItem>
 
-                        <AccordionItem
-                          value={`resources-${path.id}`}
-                          className="border border-white/10 rounded-lg bg-white/5 hover:bg-white/10 transition-all"
-                        >
-                          <AccordionTrigger className="px-4 py-2 text-sm font-medium">
-                            <div className="flex items-center gap-2">
-                              <FileText className="w-4 h-4 text-gray-400" />
-                              <span>Resources</span>
-                            </div>
-                          </AccordionTrigger>
-                          <AccordionContent className="p-3 space-y-2">
-                            {path.resources.map((res, idx) => (
-                              <a
-                                key={idx}
-                                href={res.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block text-xs text-gray-300 bg-white/10 hover:bg-white/20 hover:translate-x-1 px-3 py-2 rounded transition-all"
-                              >
-                                <span className="font-medium">{res.name}</span>
-                                <span className="text-gray-500 ml-2">• {res.type}</span>
-                              </a>
-                            ))}
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </CardContent>
-                  </Card>
+      <AccordionItem
+        value={`resources-${path.id}`}
+        className="border border-white/10 rounded-lg bg-white/5 hover:bg-white/10 hover:border-white/20 transition-colors duration-150"
+      >
+        <AccordionTrigger className="px-4 py-2 text-sm font-medium">
+          <div className="flex items-center gap-2">
+            <FileText className="w-4 h-4 text-gray-400" />
+            <span>Resources</span>
+          </div>
+        </AccordionTrigger>
+        <AccordionContent className="p-3 space-y-2">
+          {path.resources.map((res, idx) => (
+            <a
+              key={idx}
+              href={res.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-xs text-gray-300 bg-white/10 hover:bg-white/20 hover:border-white/20 px-3 py-2 rounded transition-colors duration-150"
+            >
+              <span className="font-medium">{res.name}</span>
+              <span className="text-gray-500 ml-2">• {res.type}</span>
+            </a>
+          ))}
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  </CardContent>
+</Card>
                 </div>
               </div>
             )
