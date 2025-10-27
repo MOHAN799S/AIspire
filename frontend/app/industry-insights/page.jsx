@@ -379,12 +379,12 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
   }
 
   return (
-    <div className="min-h-screen bg-black text-white py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-black text-white py-8 sm:py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8 sm:mb-12 mt-8 sm:mt-16 lg:mt-20">
           <h1
   ref={headerRef}
-  className="text-5xl md:text-6xl font-bold lg:text-7xl xl:text-8xl gradient-title mt-10"
+  className="text-5xl md:text-6xl font-bold lg:text-7xl xl:text-8xl gradient-title mt-20"
 >
   Industry Insights Dashboard
 </h1>
@@ -392,6 +392,9 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
   Real-time technology industry trends and analytics
 </p>
         </div>
+        <div className="w-full flex justify-center py-12 bg-black">
+        <div className="w-3/4 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+      </div>
 
         <div ref={metricsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
           <Card className="bg-zinc-900 border-zinc-800 backdrop-blur hover:border-white hover:shadow-2xl hover:shadow-white/10 transition-all duration-500 hover-float">
@@ -451,6 +454,10 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
           </Card>
         </div>
 
+        <div className="w-full flex justify-center py-12 bg-black">
+        <div className="w-3/4 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+      </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
           <Card className="bg-zinc-900 border-zinc-800 backdrop-blur hover:border-white hover:shadow-2xl hover:shadow-white/10 transition-all duration-500" ref={el => chartsRef.current[0] = el}>
             <CardContent className="p-4 sm:p-6">
@@ -471,6 +478,10 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
             </CardContent>
           </Card>
 
+          <div className="lg:hidden sm:w-full flex justify-center py-12 bg-black">
+        <div className="w-3/4 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+      </div>
+
           <Card className="bg-zinc-900 border-zinc-800 backdrop-blur hover:border-white hover:shadow-2xl hover:shadow-white/10 transition-all duration-500" ref={el => chartsRef.current[1] = el}>
             <CardContent className="p-4 sm:p-6">
               <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">Average Salary Progression</h3>
@@ -488,6 +499,12 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
               </ResponsiveContainer>
             </CardContent>
           </Card>
+
+          
+
+          <div className="lg:hidden sm:w-full flex justify-center py-12 bg-black">
+        <div className="w-3/4 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+      </div>
 
           <Card className="bg-zinc-900 border-zinc-800 backdrop-blur hover:border-white hover:shadow-2xl hover:shadow-white/10 transition-all duration-500" ref={el => chartsRef.current[2] = el}>
             <CardContent className="p-4 sm:p-6">
@@ -507,6 +524,10 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
             </CardContent>
           </Card>
 
+          <div className="lg:hidden sm:w-full flex justify-center py-12 bg-black">
+        <div className="w-3/4 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+      </div>
+
           <Card className="bg-zinc-900 border-zinc-800 backdrop-blur hover:border-white hover:shadow-2xl hover:shadow-white/10 transition-all duration-500" ref={el => chartsRef.current[3] = el}>
             <CardContent className="p-4 sm:p-6">
               <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">Top Salary Roles</h3>
@@ -525,6 +546,10 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
             </CardContent>
           </Card>
 
+          <div className="lg:hidden sm:w-full flex justify-center py-12 bg-black">
+        <div className="w-3/4 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+      </div>
+
           <Card className="bg-zinc-900 border-zinc-800 backdrop-blur hover:border-white hover:shadow-2xl hover:shadow-white/10 transition-all duration-500" ref={el => chartsRef.current[4] = el}>
             <CardContent className="p-4 sm:p-6">
               <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">AI Investment Growth</h3>
@@ -542,6 +567,10 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
               </ResponsiveContainer>
             </CardContent>
           </Card>
+
+          <div className="lg:hidden sm:w-full flex justify-center py-12 bg-black">
+        <div className="w-3/4 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+      </div>
 
           <Card className="bg-zinc-900 border-zinc-800 backdrop-blur hover:border-white hover:shadow-2xl hover:shadow-white/10 transition-all duration-500" ref={el => chartsRef.current[5] = el}>
             <CardContent className="p-4 sm:p-6">
@@ -568,6 +597,10 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
             </CardContent>
           </Card>
 
+          <div className="lg:hidden sm:w-full flex justify-center py-12 bg-black">
+        <div className="w-3/4 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+      </div>
+
           <Card className="bg-zinc-900 border-zinc-800 backdrop-blur hover:border-white hover:shadow-2xl hover:shadow-white/10 transition-all duration-500" ref={el => chartsRef.current[6] = el}>
             <CardContent className="p-4 sm:p-6">
               <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">Emerging Technologies</h3>
@@ -587,6 +620,10 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
               </ResponsiveContainer>
             </CardContent>
           </Card>
+
+          <div className="lg:hidden sm:w-full flex justify-center py-12 bg-black">
+        <div className="w-3/4 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+      </div>
 
           <Card className="bg-zinc-900 border-zinc-800 backdrop-blur hover:border-white hover:shadow-2xl hover:shadow-white/10 transition-all duration-500" ref={el => chartsRef.current[7] = el}>
             <CardContent className="p-4 sm:p-6">
@@ -608,6 +645,10 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
               </ResponsiveContainer>
             </CardContent>
           </Card>
+
+          <div className="lg:hidden sm:w-full flex justify-center py-12 bg-black">
+        <div className="w-3/4 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+      </div>
 
           <Card className="bg-zinc-900 border-zinc-800 backdrop-blur hover:border-white hover:shadow-2xl hover:shadow-white/10 transition-all duration-500" ref={el => chartsRef.current[8] = el}>
             <CardContent className="p-4 sm:p-6">
@@ -637,6 +678,10 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
             </CardContent>
           </Card>
 
+          <div className="lg:hidden sm:w-full flex justify-center py-12 bg-black">
+        <div className="w-3/4 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+      </div>
+
           <Card className="bg-zinc-900 border-zinc-800 backdrop-blur hover:border-white hover:shadow-2xl hover:shadow-white/10 transition-all duration-500" ref={el => chartsRef.current[9] = el}>
             <CardContent className="p-4 sm:p-6">
               <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">Skills Demand Comparison</h3>
@@ -657,7 +702,11 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
             </CardContent>
           </Card>
         </div>
+<div className=" sm:w-full flex justify-center py-12 bg-black">
+        <div className="w-3/4 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+      </div>
 
+       
         <Card className="bg-zinc-900 border-zinc-800 backdrop-blur hover:border-white hover:shadow-2xl hover:shadow-white/10 transition-all duration-500">
           <CardContent className="p-4 sm:p-6">
             <h3 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-white">In-Demand Skills Analysis</h3>
