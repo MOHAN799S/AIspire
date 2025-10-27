@@ -215,7 +215,7 @@ Best regards,
             <div className="bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-8 md:p-12 max-w-lg mx-auto">
               <FileText size={56} className="mx-auto mb-6 text-white/60" />
               <h3 className="text-xl md:text-2xl font-semibold text-white mb-3">No cover letters found</h3>
-              <p className="text-white/80 mb-8 text-sm md:text-base max-w-md mx-auto">You haven't created any cover letters yet. Click the button to create your first one!</p>
+              <p className="text-white/80 mb-8 text-sm md:text-base max-w-md mx-auto">You haven&apos;t created any cover letters yet. Click the button to create your first one!</p>
               <button
                 onClick={() => setShowForm(true)}
                 className="bg-white text-black px-8 py-3.5 rounded-xl hover:bg-white/90 transition-all font-semibold text-sm md:text-base shadow-lg"
@@ -307,7 +307,7 @@ Best regards,
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-base sm:text-lg md:text-xl font-semibold text-white">Position Details</h3>
-                      <p className="text-white/80 text-xs sm:text-sm hidden sm:block">Information about the role you're applying for</p>
+                      <p className="text-white/80 text-xs sm:text-sm hidden sm:block">Information about the role you&apos;re applying for</p>
                     </div>
                   </div>
 
@@ -484,7 +484,7 @@ Sincerely,
                     <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/30 rounded-lg sm:rounded-xl shadow-lg">
                       <span className="text-base sm:text-lg shrink-0">💡</span>
                       <p className="text-xs sm:text-sm text-white/90 leading-relaxed">
-                        <strong className="text-white">Pro Tip:</strong> Personalize your cover letter by researching the company's values, recent achievements, and culture. Highlight specific examples of how your experience aligns with their needs.
+                        <strong className="text-white">Pro Tip:</strong> Personalize your cover letter by researching the company&apos;s values, recent achievements, and culture. Highlight specific examples of how your experience aligns with their needs.
                       </p>
                     </div>
                   </div>
