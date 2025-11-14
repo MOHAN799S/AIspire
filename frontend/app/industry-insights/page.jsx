@@ -186,7 +186,7 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
     const fetchData = async () => {
       try {
         const response = await axios.post(
-          'http://localhost:5000/api/industry-insights',
+          `${process.env.NEXT_PUBLIC_API_BASE}/api/industry-insights`,
           { message: userMessage },
           { timeout: 30000, headers: { 'Content-Type': 'application/json' } }
         )
