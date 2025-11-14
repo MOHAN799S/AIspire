@@ -345,6 +345,7 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
   }, [data])
 
   const COLORS = ['#ffffff', '#e5e5e5', '#cccccc', '#b3b3b3', '#999999', '#808080']
+  console.log('Rendering with data:', data);
 
   if (loading) {
     return (

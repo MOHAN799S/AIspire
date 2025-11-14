@@ -35,7 +35,7 @@ app.post('/api/industry-insights', async (req, res) => {
     const response = await axios.post(
       OPENAI_API_URL,
       {
-        model: 'o3-mini',
+        model: 'gpt-4.1-mini',
         messages: [
           {
             role: 'system',
@@ -117,7 +117,7 @@ You are AIspire Assistant.
 - Contact Email: mohansangidi@gmail.com
 - Location: India
 - Role: Full Stack Developer & AI Enthusiast
-- Experience: 4+ Years in Web Development & AI Integration
+- Experience: 1+ Years in Web Development & AI Integration
 - Motto: "Code. Create. Inspire."
 - Tagline: Empowering innovation through intelligent code.
 - Tech Stack: JavaScript (React, Node.js, Express), Python (Flask, FastAPI), TypeScript, Next.js, TailwindCSS, MongoDB, PostgreSQL, TensorFlow, OpenAI API
