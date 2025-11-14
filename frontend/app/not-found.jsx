@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Home, ArrowLeft } from 'lucide-react';
 import * as THREE from 'three';
+import Link from 'next/link';
 
 export default function NotFound() {
   const mountRef = useRef(null);
@@ -189,13 +190,13 @@ export default function NotFound() {
               Go Back
             </button>
 
-            <a
+            <Link
               href="/"
               className="group flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-medium text-black bg-white rounded-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 w-full sm:w-auto"
             >
               <Home className="w-4 h-4 sm:w-5 sm:h-5" />
               Return Home
-            </a>
+            </Link>
           </div>
         </div>
       </div>
