@@ -16,7 +16,7 @@ import {
   AccordionContent
 } from '@/components/ui/accordion'
 import { Learningpaths } from '@/components/data'
-import { BookOpen, FileText, Loader2, ChevronLeft, ChevronRight, Search, X } from 'lucide-react'
+import { BookOpen, FileText, Loader2, ChevronLeft, ChevronRight, Search, X, Award, TrendingUp, Clock } from 'lucide-react'
 
 const LearningPathsCard = () => {
   const { isSignedIn, isLoaded } = useUser()
@@ -157,7 +157,23 @@ const LearningPathsCard = () => {
             Learning Paths
           </h2>
           <p className="text-gray-400 text-lg sm:text-xl lg:text-2xl">Choose your path and start learning today</p>
-          <div className="mt-4 text-sm text-gray-500">
+          <div className="hidden lg:flex items-center justify-center gap-8 mt-8 text-sm">
+            <div className="flex items-center gap-2 text-gray-400">
+              <Award className="w-5 h-5 text-blue-400" />
+              <span>{paths.length} Expert-Curated Paths</span>
+            </div>
+            <div className="w-px h-4 bg-white/20"></div>
+            <div className="flex items-center gap-2 text-gray-400">
+              <TrendingUp className="w-5 h-5 text-purple-400" />
+              <span>Page {currentPage} of {totalPages}</span>
+            </div>
+            <div className="w-px h-4 bg-white/20"></div>
+            <div className="flex items-center gap-2 text-gray-400">
+              <Clock className="w-5 h-5 text-pink-400" />
+              <span>Self-Paced Learning</span>
+            </div>
+          </div>
+          <div className="lg:hidden mt-4 text-sm text-gray-500">
             Page {currentPage} of {totalPages} • {paths.length} total paths
           </div>
         </div>
