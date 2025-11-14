@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "clean": "rm -rf .next tsconfig.tsbuildinfo node_modules && npm cache clean --force"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.33.7",
@@ -40,6 +41,8 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/node": "24.9.1",
+    "@types/react": "19.2.2",
     "@types/three": "^0.180.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.0",
