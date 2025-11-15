@@ -318,3 +318,18 @@
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
 }
+/* Fix for testimonials marquee */
+.scroller {
+  will-change: transform !important;
+}
+
+@media (min-width: 1024px) {
+  .scroller {
+    animation: scroll 100s linear infinite !important;
+  }
+}
+@media (max-width: 1024px) {
+  .scroller {
+    animation: scroll 100s linear infinite !important;
+  }
+}

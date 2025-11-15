@@ -1,7 +1,7 @@
-import React from "react";
+'use client'
+import React, { useEffect, useRef } from "react";
 import { Quote } from "lucide-react";
-import { Card } from "./ui/card";
-// eslint-disable-next-line react/no-unescaped-entities
+
 const testimonials = [
   {
     name: "Sarah Johnson",
@@ -48,36 +48,83 @@ const testimonials = [
 ];
 
 const Testimonials = () => {
+  const scrollerRef = useRef(null);
+
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+
+    // Duplicate content for seamless loop
+    const scrollerContent = Array.from(scroller.children);
+    scrollerContent.forEach((item) => {
+      const duplicate = item.cloneNode(true);
+      scroller.appendChild(duplicate);
+    });
+  }, []);
+
   return (
-    <section className="relative py-20 px-6 bg-muted/5 overflow-hidden">
+    <section className="relative py-20 px-6  overflow-hidden ">
       <style>{`
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+        @keyframes scroll {
+          0% { 
+            transform: translateX(0); 
+          }
+          100% { 
+            transform: translateX(calc(-382px * 6));
+          }
         }
 
-        .marquee-track {
+        .scroller {
           display: flex;
-          width: calc(200%);
-          animation: marquee 40s linear infinite;
+          gap: 32px;
+          animation: scroll 80s linear infinite;
+          width: max-content;
+          will-change: transform !important;
         }
 
-        .marquee-container:hover .marquee-track {
+        .scroller:hover {
           animation-play-state: paused;
         }
 
         .testimonial-card {
-        margin:20px;
-          transition: all 0.4s ease;
+        padding-top: 1.5rem;
+          flex: 0 0 350px;
+          width: 450px;
+          background: rgba(0, 0, 0, 0.7);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow: 0 4px 15px rgba(255, 255, 255, 0.05);
+          transform: translateY(0) scale(1);
+          border-radius: 1rem;
+          padding: 2rem;
           position: relative;
-          z-index: 0;
+          transition: all 0.4s ease;
+          margin-top: 1rem;
         }
 
         .testimonial-card:hover {
           transform: translateY(-10px) scale(1.02);
           box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1),
                       0 0 20px rgba(255, 255, 255, 0.1);
-          z-index: 1;
+        }
+
+        @media (max-width: 768px) {
+          @keyframes scroll {
+            0% { 
+              transform: translateX(0); 
+            }
+            100% { 
+              transform: translateX(calc(-324px * 6));
+            }
+          }
+
+          .scroller {
+            gap: 24px;
+          }
+
+          .testimonial-card {
+            flex: 0 0 300px;
+            width: 300px;
+          }
         }
       `}</style>
 
@@ -88,52 +135,54 @@ const Testimonials = () => {
         </p>
       </div>
 
-      {/* Marquee Section */}
-      <div className="relative marquee-container overflow-hidden">
-        <div className="marquee-track ">
-          {[...testimonials, ...testimonials].map((testimonial, index) => (
-            <Card
-            key={index}
-            className="
-              testimonial-card
-              bg-black/60
-              text-left
-              rounded-2xl
-              p-8
-              mx-10
-              flex-shrink-0
-              border border-white/10
-              
-              /* SMALL (Mobile) */
-              min-w-[300px]
-              max-w-[300px]
-              
-              /* MEDIUM (Tablet) */
-              md:min-w-[350px]
-              md:max-w-[350px]
-              
-              /* LARGE (Desktop) */
-              lg:min-w-[420px]
-              lg:max-w-[420px]
-            "
-          >
-            {/* Note: Assuming 'Quote' is an imported icon component */}
-            <Quote className="absolute top-6 right-6 w-8 h-8 text-gray-600 opacity-50" />
-            <div className="flex items-center mb-6">
-              <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-black font-bold text-lg mr-4">
-                {testimonial.image}
+      <div style={{ overflow: 'hidden', width: '100%' }}>
+        <div ref={scrollerRef} className="scroller">
+          {testimonials.map((testimonial, index) => (
+            <div key={index} className="testimonial-card">
+              <Quote 
+                style={{
+                  position: 'absolute',
+                  top: '1.5rem',
+                  right: '1.5rem',
+                  width: '2rem',
+                  height: '2rem',
+                  color: 'rgb(75, 85, 99)',
+                  opacity: 0.5
+                }}
+              />
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <div style={{
+                  width: '3.5rem',
+                  height: '3.5rem',
+                  borderRadius: '50%',
+                  background: 'white',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'black',
+                  fontWeight: 'bold',
+                  fontSize: '1.125rem',
+                  marginRight: '1rem',
+                  flexShrink: 0
+                }}>
+                  {testimonial.image}
+                </div>
+                <div>
+                  <h4 style={{ color: 'white', fontWeight: 600, fontSize: '1.125rem', marginBottom: '0.25rem' }}>
+                    {testimonial.name}
+                  </h4>
+                  <p style={{ color: 'rgb(156, 163, 175)', fontSize: '0.875rem', marginBottom: '0.125rem' }}>
+                    {testimonial.role}
+                  </p>
+                  <p style={{ color: 'rgb(107, 114, 128)', fontSize: '0.75rem' }}>
+                    {testimonial.company}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h4 className="text-white font-semibold text-lg">{testimonial.name}</h4>
-                <p className="text-gray-400 text-sm">{testimonial.role}</p>
-                <p className="text-gray-500 text-xs">{testimonial.company}</p>
-              </div>
+              <p style={{ color: 'rgb(209, 213, 219)', lineHeight: '1.625' }}>
+                "{testimonial.text}"
+              </p>
             </div>
-            <p className="text-gray-300 leading-relaxed">
-    &quot;{testimonial.text}&quot;
-  </p>
-          </Card>
-          
           ))}
         </div>
       </div>

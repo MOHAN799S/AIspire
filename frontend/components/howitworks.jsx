@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useRef } from 'react';
-import { UserCircle, FileText, TrendingUp, Target, Rocket } from 'lucide-react';
+import { UserCircle, FileText, TrendingUp, Target, Rocket, BookOpen } from 'lucide-react';
 import { Card } from './ui/card';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -9,27 +9,32 @@ gsap.registerPlugin(ScrollTrigger);
 
 const steps = [
   {
-    title: '1. Create Your Profile',
+    title: 'Create Your Profile',
     description: 'Sign up and fill in your career details, skills, experience, and goals to get started.',
     icon: UserCircle,
   },
   {
-    title: '2. Generate Resume & Cover Letter',
+    title: 'Explore Industry Insights & Learning Path',
+    description: 'Discover the latest industry trends and follow a personalized learning path to enhance your skills.',
+    icon: TrendingUp,
+  },
+  {
+    title: 'Get Project Recommendations',
+    description: 'Receive AI-powered project suggestions tailored to your skills and career aspirations.',
+    icon: BookOpen,
+  },
+  {
+    title: 'Generate Resume & Cover Letter',
     description: 'Use our AI-powered tools to instantly generate a personalized resume and cover letter tailored to your industry and role.',
     icon: FileText,
   },
   {
-    title: '3. Explore Industry Insights',
-    description: 'Access up-to-date market trends, salary data, and in-demand skills to stay ahead of the curve.',
-    icon: TrendingUp,
-  },
-  {
-    title: '4. Prepare for Interviews',
+    title: 'Prepare for Interviews',
     description: 'Practice with AI-driven mock interviews, get instant feedback, and boost your confidence.',
     icon: Target,
   },
   {
-    title: '5. Apply & Succeed',
+    title: 'Apply & Succeed',
     description: 'Apply to jobs directly or download your documents and take the next step in your career.',
     icon: Rocket,
   },
@@ -257,7 +262,7 @@ const HowItWorks = () => {
               <Card
                 key={index}
                 ref={(el) => (cardsRef.current[index] = el)}
-                className="step-card bg-black rounded-xl p-6 text-left border border-gray-800 shadow-lg cursor-pointer hover:shadow-2xl hover:-translate-y-2 hover:border-white transition-all duration-300"
+                className="step-card bg-black rounded-xl p-6 text-left border border-white/20 shadow-lg cursor-pointer hover:shadow-2xl hover:-translate-y-2 hover:border-white transition-all duration-300"
                 style={{ perspective: '1000px' }}
               >
                 <div>

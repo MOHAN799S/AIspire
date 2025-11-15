@@ -15,7 +15,8 @@ import {
   MessageSquare,
   Flag,
   Route,
-  ChartNoAxesCombined
+  ChartNoAxesCombined,
+  BookOpen
 } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
 import { toast } from 'sonner'
@@ -84,6 +85,15 @@ export const Header = () => {
                                     <div className='flex flex-col'>
                                         <span className='font-medium'>Learning Path</span>
                                         <span className='text-xs text-muted-foreground'>Personalized roadmap</span>
+                                    </div>
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href={`projects`} className='flex items-center gap-3 cursor-pointer py-2.5'>
+                                    <BookOpen className='w-4 h-4 text-primary' />
+                                    <div className='flex flex-col'>
+                                        <span className='font-medium'>Projects</span>
+                                        <span className='text-xs text-muted-foreground'>AI-driven projects</span>
                                     </div>
                                 </Link>
                             </DropdownMenuItem>

@@ -16,12 +16,26 @@ gsap.registerPlugin(ScrollTrigger)
 
 const features = [
   {
+    icon: TrendingUp,
+    title: 'Industry Insights',
+    description:
+      'Stay ahead with up-to-date trends, salary benchmarks, and skills in demand across various industries.',
+    badge: 'Data-Driven',
+  },
+  {
   icon: Route, // or another relevant icon from lucide-react
   title: 'Learning Path',
   description:
     'Follow a personalized learning journey with curated courses, skill assessments, and progress tracking to accelerate your career growth.',
   badge: 'Guided',
 },
+{
+    icon: BookOpen,
+    title: 'AI-powered project recommendations',
+    description:
+      'Receive personalized project suggestions based on your skills and career goals to build a standout portfolio.',
+    badge: 'Innovative',
+  },
 
   {
     icon: FileText,
@@ -37,13 +51,7 @@ const features = [
       "Generate compelling cover letters customized to the job you're applying for, helping you stand out from the competition.",
     badge: 'Popular',
   },
-  {
-    icon: TrendingUp,
-    title: 'Industry Insights',
-    description:
-      'Stay ahead with up-to-date trends, salary benchmarks, and skills in demand across various industries.',
-    badge: 'Data-Driven',
-  },
+
   {
     icon: GraduationCap,
     title: 'Interview Preparation',
