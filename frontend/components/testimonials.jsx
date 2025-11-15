@@ -180,7 +180,7 @@ const Testimonials = () => {
                 </div>
               </div>
               <p style={{ color: 'rgb(209, 213, 219)', lineHeight: '1.625' }}>
-                "{testimonial.text}"
+                &apos;{testimonial.text}&apos;
               </p>
             </div>
           ))}
