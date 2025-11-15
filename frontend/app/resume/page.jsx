@@ -35,6 +35,26 @@ const ResumePage = () => {
       document.body.style.overflow = 'unset';
     };
   }, [showForm]);
+  useEffect(() => {
+  if (showForm) {
+    // Prevent background scrolling when modal is open
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+  } else {
+    // Restore scrolling when modal closes
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
+  }
+  
+  // Cleanup function
+  return () => {
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
+  };
+}, [showForm]);
 
   const validatePersonalInfo = () => {
     const newErrors = {};
@@ -325,7 +345,7 @@ const ResumePage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white">
+   <div className="relative min-h-screen bg-black overflow-hidden pt-30 px-4 sm:px-6 lg:px-8"> 
       {/* Animated background */}
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/5 via-black to-black pointer-events-none" />
       
@@ -405,29 +425,38 @@ const ResumePage = () => {
         )}
 
         {/* Form Modal - Full Screen Responsive */}
-        {showForm && (
-  <div className="fixed inset-0 bg-black z-[9999] overflow-hidden">
-    <div className="h-full w-full flex flex-col bg-gradient-to-br from-black via-black to-black/95">
+ {showForm && (
+  <div className="fixed inset-0 bg-black backdrop-blur-2xl flex items-start justify-center p-0 sm:p-4 z-[9999] overflow-y-auto pt-16 sm:pt-4 lg:pt-30 md:pt-30">
+    <div className="bg-black backdrop-blur-2xl rounded-none sm:rounded-2xl w-full sm:max-w-5xl min-h-[calc(100vh-4rem)] sm:min-h-0 sm:max-h-[95vh] overflow-hidden border-0 sm:border border-white/30 shadow-2xl sm:my-4 relative flex flex-col">
+      {/* Glassy overlay effect */}
+      <div className="absolute inset-0 pointer-events-none"></div>
+      
       {/* Modal Header - Fixed */}
-      <div className="flex-shrink-0 flex justify-between items-center p-4 sm:p-6 border-b border-white/10 bg-black/50 backdrop-blur-xl">
-        <div className="flex-1 min-w-0 mr-4">
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-1 truncate">Create Resume</h2>
-          <p className="text-white/60 text-xs sm:text-sm hidden sm:block">Build your professional resume</p>
+      <div className="flex-shrink-0 backdrop-blur-2xl border-b border-white/10 p-4 sm:p-6 bg-black/95">
+        <div className="flex justify-between items-start gap-3 sm:gap-4">
+          <div className="flex-1 min-w-0"> 
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2 tracking-tight">
+              Create Resume
+            </h2>
+            <p className="text-white/60 text-xs sm:text-sm">
+              Build your professional resume
+            </p>
+          </div>
+          <button 
+            onClick={() => {
+              setShowForm(false);
+              setCurrentStep(0);
+              setErrors({});
+            }}
+            className="text-white/60 hover:text-white hover:bg-white/5 p-2 rounded-xl transition-colors flex-shrink-0"
+          >
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
+          </button>
         </div>
-        <button 
-          onClick={() => {
-            setShowForm(false);
-            setCurrentStep(0);
-            setErrors({});
-          }}
-          className="text-white/60 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-xl flex-shrink-0"
-        >
-          <X className="w-6 h-6" />
-        </button>
       </div>
 
       {/* Step Indicator - Fixed */}
-      <div className="flex-shrink-0 px-4 sm:px-6 py-4 sm:py-5 border-b border-white/10 bg-black/30 backdrop-blur-xl overflow-x-auto">
+      <div className="flex-shrink-0 px-4 sm:px-6 py-4 sm:py-5 border-b border-white/10 backdrop-blur-2xl bg-black/95 overflow-x-auto">
         <div className="flex justify-between items-center gap-2 sm:gap-4 min-w-max sm:min-w-0 mx-auto max-w-3xl">
           {formSteps.map((step, index) => {
             const Icon = step.icon;
@@ -437,27 +466,36 @@ const ResumePage = () => {
             return (
               <div key={index} className="flex flex-col items-center gap-2 relative flex-1 min-w-[60px] sm:min-w-[80px]">
                 {index < formSteps.length - 1 && (
-                  <div className={`hidden sm:block absolute top-5 left-1/2 w-full h-0.5 transition-all ${
-                    isCompleted ? 'bg-white' : 'bg-white/10'
-                  }`} style={{ zIndex: 0 }} />
+                  <div 
+                    className={`hidden sm:block absolute top-5 left-1/2 w-full h-0.5 transition-all duration-300 ${
+                      isCompleted ? 'bg-white' : 'bg-white/10'
+                    }`} 
+                    style={{ zIndex: 0 }} 
+                  />
                 )}
-                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center relative z-10 transition-all duration-300 ${
-                  isActive 
-                    ? 'bg-white text-black shadow-lg shadow-white/20 scale-110' 
-                    : isCompleted 
-                    ? 'bg-white/20 text-white border border-white/20' 
-                    : 'bg-white/5 text-white/40 border border-white/10'
-                }`}>
+                <div 
+                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center relative z-10 transition-all duration-300 ${
+                    isActive 
+                      ? 'bg-white text-black shadow-lg shadow-white/20 scale-110' 
+                      : isCompleted 
+                      ? 'bg-white/20 text-white border border-white/20' 
+                      : 'bg-white/5 text-white/40 border border-white/10'
+                  }`}
+                >
                   <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <span className={`text-xs font-medium text-center transition-all hidden sm:block ${
-                  isActive ? 'text-white' : isCompleted ? 'text-white/60' : 'text-white/40'
-                }`}>
+                <span 
+                  className={`text-xs font-medium text-center transition-all hidden sm:block ${
+                    isActive ? 'text-white' : isCompleted ? 'text-white/60' : 'text-white/40'
+                  }`}
+                >
                   {step.title}
                 </span>
-                <span className={`text-xs font-medium text-center transition-all sm:hidden ${
-                  isActive ? 'text-white' : isCompleted ? 'text-white/60' : 'text-white/40'
-                }`}>
+                <span 
+                  className={`text-xs font-medium text-center transition-all sm:hidden ${
+                    isActive ? 'text-white' : isCompleted ? 'text-white/60' : 'text-white/40'
+                  }`}
+                >
                   {step.shortTitle}
                 </span>
               </div>
@@ -467,7 +505,7 @@ const ResumePage = () => {
       </div>
 
       {/* Form Content - Scrollable */}
-      <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 py-6 sm:py-8">
+      <div className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto overflow-x-hidden">
         <div className="max-w-3xl mx-auto">
           {/* Personal Info Step */}
           {currentStep === 0 && (
@@ -818,107 +856,109 @@ const ResumePage = () => {
         </div>
       </div>
 
-      {/* Modal Footer - Fixed */}
-      <div className="flex-shrink-0 flex flex-row justify-between items-center gap-3 p-4 sm:p-6 border-t border-white/10 bg-black/50 backdrop-blur-xl">
-        <Button
-          onClick={handlePrevious}
-          disabled={currentStep === 0}
-          variant="outline"
-          size="lg"
-          className="border-white/20 text-white hover:bg-white/10 disabled:opacity-30 flex-1 sm:flex-initial sm:min-w-[120px]"
-        >
-          Previous
-        </Button>
-        {currentStep < formSteps.length - 1 ? (
-          <Button
-            onClick={handleNext}
-            size="lg"
-            className="bg-white hover:bg-white/90 text-black font-semibold flex-1 sm:flex-initial sm:min-w-[120px]"
+      {/* Modal Footer - Fixed at bottom */}
+      <div className="flex-shrink-0 p-4 sm:p-6 border-t border-white/10 backdrop-blur-2xl bg-black/95">
+        <div className="flex flex-col-reverse sm:flex-row gap-3 justify-between items-stretch sm:items-center">
+          <button
+            onClick={handlePrevious}
+            disabled={currentStep === 0}
+            className="px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-white/30 text-white text-sm sm:text-base rounded-lg sm:rounded-xl hover:border-white hover:bg-white/10 transition-all font-medium disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            Next
-          </Button>
-        ) : (
-          <Button
-            onClick={saveResume}
-            disabled={isLoading}
-            size="lg"
-            className="bg-white hover:bg-white/90 text-black font-semibold flex-1 sm:flex-initial sm:min-w-[120px]"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              'Create Resume'
-            )}
-          </Button>
-        )}
+            Previous
+          </button>
+          {currentStep < formSteps.length - 1 ? (
+            <button
+              onClick={handleNext}
+              className="px-4 sm:px-6 py-2.5 sm:py-3 bg-white text-black text-sm sm:text-base rounded-lg sm:rounded-xl hover:bg-white/90 transition-all font-semibold shadow-lg shadow-white/20"
+            >
+              Next
+            </button>
+          ) : (
+            <button
+              onClick={saveResume}
+              disabled={isLoading}
+              className="px-4 sm:px-6 py-2.5 sm:py-3 bg-white text-black text-sm sm:text-base rounded-lg sm:rounded-xl hover:bg-white/90 transition-all font-semibold shadow-lg shadow-white/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                'Create Resume'
+              )}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   </div>
 )}
 
         {/* AI Modal */}
-        {showAIModal && (
-          <div className="fixed inset-0 bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 z-[10001]">
-            <div className="bg-white/5 border border-white/10 rounded-2xl w-full max-w-lg p-5 sm:p-6 lg:p-8 max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-                  <Sparkles className="w-6 h-6" />
-                  AI Assistant
-                </h3>
-                <button 
-                  onClick={() => {
-                    setShowAIModal(false);
-                    setAiPrompt('');
-                  }}
-                  className="text-white/60 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-xl"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <p className="text-white/60 mb-4 text-sm">
-                Describe what you want to generate and AI will create professional content for you.
-              </p>
-              <textarea
-                placeholder="E.g., 5 years of experience in full-stack development..."
-                value={aiPrompt}
-                onChange={(e) => setAiPrompt(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 h-32 focus:outline-none focus:border-white/30 focus:ring-2 focus:ring-white/10 transition-all resize-none mb-6"
-              />
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button
-                  onClick={() => {
-                    setShowAIModal(false);
-                    setAiPrompt('');
-                  }}
-                  variant="outline"
-                  className="flex-1 border-white/20 text-white hover:bg-white/10"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleGenerateAI}
-                  disabled={generatingAI}
-                  className="flex-1 bg-white hover:bg-white/90 text-black font-semibold"
-                >
-                  {generatingAI ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Generating...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Generate
-                    </>
-                  )}
-                </Button>
-              </div>
+         {showAIModal && (
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-lg z-[10000] flex items-center justify-center p-4 overflow-hidden">
+        <div className="bg-black border border-white/10 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl">
+          <div className="p-6 space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                <Sparkles className="w-6 h-6" />
+                AI Assistant
+              </h3>
+              <button 
+                onClick={() => {
+                  setShowAIModal(false);
+                  setAiPrompt('');
+                }}
+                className="text-white/60 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-xl"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <p className="text-white/60 text-sm">
+              Describe what you want to generate and AI will create professional content for you.
+            </p>
+            
+            <textarea
+              placeholder="E.g., 5 years of experience in full-stack development..."
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 h-32 focus:outline-none focus:border-white/30 focus:ring-2 focus:ring-white/10 transition-all resize-none"
+            />
+            
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => {
+                  setShowAIModal(false);
+                  setAiPrompt('');
+                }}
+                className="flex-1 px-4 py-3 border border-white/20 text-white hover:bg-white/10 rounded-xl transition-all font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleGenerateAI}
+                disabled={generatingAI}
+                className="flex-1 px-4 py-3 bg-white hover:bg-white/90 text-black font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {generatingAI ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    Generate
+                  </>
+                )}
+              </button>
             </div>
           </div>
-        )}
+        </div>
+      </div>
+)}
       </div>
 
     </div>
