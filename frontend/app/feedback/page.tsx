@@ -168,7 +168,7 @@ transform hover:scale-105 transition-all duration-300
               </div>
             </div>
             <p className="text-neutral-400 leading-relaxed">
-              Hello {user?.firstName || 'there'}! We value your input. Please share any issues you've encountered or
+              Hello {user?.firstName || 'there'}! We value your input. Please share any issues you&quote;ve encountered or
               suggestions for improvement to help us enhance the AIspire platform.
             </p>
           </div>
