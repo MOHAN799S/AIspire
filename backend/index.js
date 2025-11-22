@@ -2,22 +2,34 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const axios = require('axios');
+const feedbackRoutes = require('./routes/feedback');
+const connectDB = require('./config/db'); 
 
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000; // fallback just in case
+const client_url_port = 'http://localhost:3000';
 const client_url = process.env.CLIENT_URL;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
-app.use(cors({
-  origin: client_url,
-  methods: ['GET','POST'],
-  credentials: true
-}));
+// CORS
+app.use(
+  cors({
+    origin: client_url,
+    methods: ['GET', 'POST'],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
+
+// ✅ Connect to MongoDB BEFORE using routes & starting server
+connectDB();
+
+// Routes
+app.use('/api/feedback', feedbackRoutes);
 
 app.post('/api/industry-insights', async (req, res) => {
   try {
@@ -31,7 +43,6 @@ app.post('/api/industry-insights', async (req, res) => {
       return res.status(500).json({ error: 'OpenAI API key not configured' });
     }
 
-    // Call OpenAI API
     const response = await axios.post(
       OPENAI_API_URL,
       {
@@ -39,61 +50,58 @@ app.post('/api/industry-insights', async (req, res) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a data analyst that provides structured JSON responses. Always respond with valid JSON only, no additional text or formatting.'
+            content:
+              'You are a data analyst that provides structured JSON responses. Always respond with valid JSON only, no additional text or formatting.',
           },
           {
             role: 'user',
-            content: message
-          }
+            content: message,
+          },
         ],
         temperature: 0.7,
         max_tokens: 4096,
-        response_format: { type: "json_object" }
+        response_format: { type: 'json_object' },
       },
       {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${OPENAI_API_KEY}`
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
         },
-        timeout: 30000
+        timeout: 30000,
       }
     );
 
-    // Extract the text content from OpenAI's response
     const gptReply = response.data.choices[0].message.content;
-    
-    // Parse the JSON response
+
     let parsedData;
     try {
       parsedData = JSON.parse(gptReply);
     } catch (parseError) {
       console.error('Failed to parse GPT response:', gptReply);
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'Failed to parse AI response',
-        rawResponse: gptReply 
+        rawResponse: gptReply,
       });
     }
 
-    // Return the parsed data
-    res.json({ 
+    res.json({
       reply: parsedData,
-      success: true 
+      success: true,
     });
-
   } catch (error) {
     console.error('Error calling OpenAI API:', error.response?.data || error.message);
-    
+
     if (error.response?.status === 401) {
       return res.status(401).json({ error: 'Invalid API key' });
     }
-    
+
     if (error.response?.status === 429) {
       return res.status(429).json({ error: 'Rate limit exceeded' });
     }
 
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to fetch industry insights',
-      details: error.message 
+      details: error.message,
     });
   }
 });
@@ -131,8 +139,6 @@ You are AIspire Assistant.
 Answer in a friendly and concise manner.
 Include developer information if asked.
 `;
-
-
 
     const response = await axios.post(
       'https://api.openai.com/v1/chat/completions',

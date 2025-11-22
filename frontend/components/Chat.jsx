@@ -5,45 +5,31 @@ import { MessageCircle, X, Moon, Sun, Send, Sparkles, Bot, User, Trash2, AlertCi
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
 
-function makeSessionId() {
-  return "sess_" + Math.random().toString(36).substring(2, 10);
-}
-
 // Format timestamp to human-readable format
 function formatTimestamp(timestamp) {
   const date = new Date(timestamp);
   const now = new Date();
   const diff = now - date;
   
-  // Less than 1 minute
-  if (diff < 60000) {
-    return "Just now";
-  }
-  
-  // Less than 1 hour
+  if (diff < 60000) return "Just now";
   if (diff < 3600000) {
     const mins = Math.floor(diff / 60000);
     return `${mins}m ago`;
   }
-  
-  // Today
   if (date.toDateString() === now.toDateString()) {
     return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
   }
   
-  // Yesterday
   const yesterday = new Date(now);
   yesterday.setDate(yesterday.getDate() - 1);
   if (date.toDateString() === yesterday.toDateString()) {
     return `Yesterday ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
   }
   
-  // This year
   if (date.getFullYear() === now.getFullYear()) {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
   }
   
-  // Other years
   return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
@@ -52,24 +38,16 @@ function formatDateSeparator(timestamp) {
   const date = new Date(timestamp);
   const now = new Date();
   
-  // Today
-  if (date.toDateString() === now.toDateString()) {
-    return "Today";
-  }
+  if (date.toDateString() === now.toDateString()) return "Today";
   
-  // Yesterday
   const yesterday = new Date(now);
   yesterday.setDate(yesterday.getDate() - 1);
-  if (date.toDateString() === yesterday.toDateString()) {
-    return "Yesterday";
-  }
+  if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
   
-  // This year
   if (date.getFullYear() === now.getFullYear()) {
     return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
   }
   
-  // Other years
   return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 }
 
@@ -95,27 +73,19 @@ function MessageStatus({ status, darkMode }) {
   }
   
   if (status === 'sent') {
-    return (
-      <Check size={14} className={darkMode ? "text-gray-400" : "text-gray-500"} />
-    );
+    return <Check size={14} className={darkMode ? "text-gray-400" : "text-gray-500"} />;
   }
   
   if (status === 'delivered') {
-    return (
-      <CheckCheck size={14} className={darkMode ? "text-gray-400" : "text-gray-500"} />
-    );
+    return <CheckCheck size={14} className={darkMode ? "text-gray-400" : "text-gray-500"} />;
   }
   
   if (status === 'read') {
-    return (
-      <CheckCheck size={14} className="text-blue-500" />
-    );
+    return <CheckCheck size={14} className="text-blue-500" />;
   }
   
   if (status === 'failed') {
-    return (
-      <AlertCircle size={14} className="text-red-500" />
-    );
+    return <AlertCircle size={14} className="text-red-500" />;
   }
   
   return null;
@@ -130,19 +100,8 @@ export default function Chatbot() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const [sessionId, setSessionId] = useState(null);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const scrollRef = useRef(null);
-
-  // Initialize session ID
-  useEffect(() => {
-    let sid = localStorage.getItem("aispire-session-id");
-    if (!sid) {
-      sid = makeSessionId();
-      localStorage.setItem("aispire-session-id", sid);
-    }
-    setSessionId(sid);
-  }, []);
 
   // Load theme preference
   useEffect(() => {
@@ -155,58 +114,19 @@ export default function Chatbot() {
     localStorage.setItem("aispire-theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
-  // Load chat history
+  // Load chat history from local storage only
   useEffect(() => {
-    if (!isLoaded || !sessionId) return;
+    if (!isLoaded) return;
 
-    if (!isSignedIn) {
-      const local = localStorage.getItem("aispire-chat-local");
-      if (local) {
-        try {
-          setMessages(JSON.parse(local));
-        } catch (err) {
-          console.error("Failed to parse local messages:", err);
-        }
-      }
-      return;
-    }
-
-    async function loadHistory() {
+    const local = localStorage.getItem("aispire-chat-local");
+    if (local) {
       try {
-        const params = `?userId=${encodeURIComponent(userId)}`;
-        const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_BASE}/api/chat/history${params}`,
-          {
-            timeout: 10000,
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-        
-        if (res.data?.messages && Array.isArray(res.data.messages)) {
-          setMessages(res.data.messages.map(m => ({ 
-            sender: m.sender, 
-            text: m.text,
-            timestamp: m.timestamp || Date.now(),
-            status: m.sender === 'user' ? 'read' : undefined
-          })));
-        }
+        setMessages(JSON.parse(local));
       } catch (err) {
-        console.error("Failed to load history:", err);
-        const local = localStorage.getItem("aispire-chat-local");
-        if (local) {
-          try {
-            setMessages(JSON.parse(local));
-          } catch (parseErr) {
-            console.error("Failed to parse local messages:", parseErr);
-          }
-        }
+        console.error("Failed to parse local messages:", err);
       }
     }
-    
-    loadHistory();
-  }, [sessionId, userId, isSignedIn, isLoaded]);
+  }, [isLoaded]);
 
   // Save messages to local storage
   useEffect(() => {
@@ -306,8 +226,7 @@ export default function Chatbot() {
         `${process.env.NEXT_PUBLIC_API_BASE}/api/chat`,
         {
           message: userMessage,
-          userId: userId,
-          sessionId,
+          userId: userId
         },
         {
           timeout: 30000,
@@ -367,7 +286,7 @@ export default function Chatbot() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-6 right-6  max-w-sm z-100"
+            className="fixed top-6 right-6 max-w-sm z-100"
           >
             <div className={`rounded-2xl p-4 shadow-2xl flex items-start gap-3 ${
               darkMode ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-200"
