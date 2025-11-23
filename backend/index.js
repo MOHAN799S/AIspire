@@ -1,15 +1,17 @@
 const express = require('express');
 const dotenv = require('dotenv');
+dotenv.config();
 const cors = require('cors');
 const axios = require('axios');
 const feedbackRoutes = require('./routes/feedback');
 const connectDB = require('./config/db'); 
 
-dotenv.config();
+
+
 
 const app = express();
 const port = process.env.PORT || 4000; // fallback just in case
-const client_url_port = 'http://localhost:3000';
+const client_url_port = 'http://localhost:3000'; // Adjusted for local network access
 const client_url = process.env.CLIENT_URL;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
@@ -17,8 +19,8 @@ const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 // CORS
 app.use(
   cors({
-    origin: client_url,
-    methods: ['GET', 'POST'],
+    origin: client_url_port,
+    methods: ['GET', 'POST','PATCH','DELETE'],
     credentials: true,
   })
 );
