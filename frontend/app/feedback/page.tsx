@@ -128,7 +128,7 @@ const ReportPage = () => {
         userId: user?.id,
       };
 
-      const res = await fetch('http://192.168.31.251:5000/api/feedback', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/feedback`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -243,7 +243,7 @@ transform hover:scale-105 transition-all duration-300 text-white transition-colo
               </div>
             </div>
             <p className="text-neutral-400 leading-relaxed">
-              Hello {user?.firstName || 'there'}! We value your input. Please share any issues you've encountered or suggestions for improvement to help us enhance the AIspire platform.
+              Hello {user?.firstName || 'there'}! We value your input. Please share any issues you&ve encountered or suggestions for improvement to help us enhance the AIspire platform.
             </p>
           </div>
 
