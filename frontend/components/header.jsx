@@ -124,12 +124,19 @@ export const Header = () => {
                   </Link>
                 </DropdownMenuItem>
 
+                <DropdownMenuSeparator />
+                
                 <DropdownMenuItem asChild>
-                  <Link href={`interview-prep`} className='flex items-center gap-3 cursor-pointer py-2.5'>
+                  <Link href={`interview-prep`} className='flex items-center gap-3 cursor-pointer py-3 bg-primary/[0.03] hover:bg-primary/[0.08] border-l-[3px] border-primary'>
                     <GraduationCap className='w-4 h-4 text-primary' />
-                    <div className='flex flex-col'>
-                      <span className='font-medium'>Interview Prep</span>
-                      <span className='text-xs text-muted-foreground'>Practice & improve</span>
+                    <div className='flex flex-col flex-1'>
+                      <div className='flex items-center gap-2'>
+                        <span className='font-semibold text-[15px]'>Interview Prep</span>
+                        <span className='px-2 py-0.5 text-[9px] font-semibold tracking-wide bg-primary text-primary-foreground rounded uppercase'>
+                         Pro Feature
+                        </span>
+                      </div>
+                      <span className='text-xs text-muted-foreground'>AI-powered practice sessions</span>
                     </div>
                   </Link>
                 </DropdownMenuItem>

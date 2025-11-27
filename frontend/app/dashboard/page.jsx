@@ -7,8 +7,6 @@ import Charts from './components/Charts'
 import { Loader2 } from 'lucide-react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import * as THREE from 'three'
-import StarBackground from '@/components/StartBackground'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -23,8 +21,6 @@ export default function DashboardPage() {
   const cardsRef = useRef(null)
   const dividerRef = useRef(null)
   const chartsRef = useRef(null)
-  const canvasRef = useRef(null)
-  const heroRef = useRef(null)
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) router.push('/sign-up')
@@ -34,130 +30,6 @@ export default function DashboardPage() {
       return () => clearTimeout(timer)
     }
   }, [isLoaded, isSignedIn, router])
-
-  // Three.js Setup
- // Three.js Setup
-useEffect(() => {
-  if (!canvasRef.current || !heroRef.current || pageLoading) return
-
-  const container = heroRef.current
-  const scene = new THREE.Scene()
-  const camera = new THREE.PerspectiveCamera(
-    75,
-    container.clientWidth / container.clientHeight,
-    0.1,
-    1000
-  )
-  const renderer = new THREE.WebGLRenderer({
-    canvas: canvasRef.current,
-    alpha: true,
-    antialias: true,
-  })
-
-  const updateSize = () => {
-    const width = container.clientWidth
-    const height = container.clientHeight
-    renderer.setSize(width, height)
-    camera.aspect = width / height
-    camera.updateProjectionMatrix()
-  }
-
-  updateSize()
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-  camera.position.z = 8
-
-  // 🌌 Floating white particles (background)
-  const particlesGeometry = new THREE.BufferGeometry()
-  const particlesCount = 800
-  const posArray = new Float32Array(particlesCount * 3)
-  for (let i = 0; i < particlesCount * 3; i++) {
-    posArray[i] = (Math.random() - 0.5) * 15
-  }
-  particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3))
-  const particlesMaterial = new THREE.PointsMaterial({
-    size: 0.02,
-    color: 0xffffff,
-    transparent: true,
-    opacity: 0.6,
-  })
-  const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial)
-  scene.add(particlesMesh)
-
-  // 🧱 Geometric shapes — black & white wireframes
-  const geometries = [
-    new THREE.TorusGeometry(0.5, 0.15, 16, 100),
-    new THREE.BoxGeometry(0.6, 0.6, 0.6),
-    new THREE.SphereGeometry(0.5, 16, 16),
-    new THREE.ConeGeometry(0.4, 1, 16),
-    new THREE.RingGeometry(0.3, 0.5, 32),
-    new THREE.OctahedronGeometry(0.5, 0),
-  ]
-
-  const materials = [
-    new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.15,
-    }),
-    new THREE.MeshBasicMaterial({
-      color: 0x000000,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.12,
-    }),
-  ]
-
-  // Create multiple objects from geometry list
-  const shapes = []
-  for (let i = 0; i < geometries.length; i++) {
-    const mesh = new THREE.Mesh(
-      geometries[i],
-      materials[i % 2] // alternate white/black
-    )
-    mesh.position.set(
-      (Math.random() - 0.5) * 8,
-      (Math.random() - 0.5) * 5,
-      (Math.random() - 0.5) * 3
-    )
-    mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0)
-    scene.add(mesh)
-    shapes.push(mesh)
-  }
-
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
-  scene.add(ambientLight)
-
-  // 🎞 Animation
-  const clock = new THREE.Clock()
-  const animate = () => {
-    requestAnimationFrame(animate)
-    const elapsedTime = clock.getElapsedTime()
-
-    particlesMesh.rotation.y = elapsedTime * 0.015
-
-    shapes.forEach((mesh, i) => {
-      mesh.rotation.x += 0.0015 + i * 0.0002
-      mesh.rotation.y += 0.001 + i * 0.0003
-    })
-
-    renderer.render(scene, camera)
-  }
-  animate()
-
-  // Handle resize
-  window.addEventListener('resize', updateSize)
-
-  return () => {
-    window.removeEventListener('resize', updateSize)
-    renderer.dispose()
-    particlesGeometry.dispose()
-    particlesMaterial.dispose()
-    geometries.forEach((g) => g.dispose())
-    materials.forEach((m) => m.dispose())
-  }
-}, [pageLoading])
-
 
   // GSAP Animations
   useEffect(() => {
@@ -226,14 +98,9 @@ useEffect(() => {
   if (!isSignedIn) return null
 
   return (
-    <div className="relative min-h-screen bg-gray-50 dark:bg-black overflow-hidden"> 
+    <div className="relative min-h-screen bg-black overflow-hidden"> 
       <div className="pt-20 sm:pt-24 lg:pt-28 relative z-10">
-        <div ref={heroRef} className="relative bg-white dark:bg-black text-center overflow-hidden">
-          <canvas
-            ref={canvasRef}
-            className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20 dark:opacity-25"
-          />
-          
+        <div className="relative bg-black text-center overflow-hidden">
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
             <h1 ref={titleRef} className="text-5xl md:text-6xl font-bold lg:text-7xl xl:text-8xl gradient-title">
               Dashboard Overview
@@ -254,7 +121,7 @@ useEffect(() => {
             ].map((stat, i) => (
               <div
                 key={i}
-                className="bg-white dark:bg-gray-900 rounded-xl p-4 sm:p-6 shadow-lg border border-gray-200 dark:border-gray-800 hover:shadow-xl transition-shadow"
+                className="bg-muted/30 border rounded-xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-shadow"
               >
                 <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{stat.label}</p>
                 <p className={`text-xl sm:text-2xl lg:text-3xl font-bold text-${stat.color}-600 dark:text-${stat.color}-400 mt-1`}>
@@ -267,7 +134,7 @@ useEffect(() => {
         </div>
 
         <div className="w-full flex justify-center py-12 bg-gray-50 dark:bg-black">
-          <div  className="w-3/4 h-px bg-gradient-to-r from-transparent via-gray-400 dark:via-gray-600 to-transparent"></div>
+          <div ref={dividerRef} className="w-3/4 h-px bg-gradient-to-r from-transparent via-gray-400 dark:via-gray-600 to-transparent"></div>
         </div>
 
         <div ref={chartsRef}>

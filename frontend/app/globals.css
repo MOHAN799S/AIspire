@@ -333,3 +333,58 @@
     animation: scroll 100s linear infinite !important;
   }
 }
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Add this to your globals.css file */
+
+/* ============================================
+   PROFESSIONAL CUSTOM SCROLLBAR STYLES
+   ============================================ */
+
+/* Webkit browsers (Chrome, Safari, Edge, Opera) */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+  color:aqua;
+}
+
+
+
+
+/* Alternative: Fixed color scheme (if you prefer specific colors) */
+/*
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+  border-radius: 10px;
+  margin: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+  border: 2px solid #0a0a0a;
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #764ba2 0%, #667eea 100%);
+  border-color: #667eea;
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #5568d3 0%, #654393 100%);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #667eea #0a0a0a;
+}
+*/

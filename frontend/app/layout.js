@@ -11,6 +11,7 @@ import { AuthListener } from "@/components/AuthListener";
 import AdvancedCursor from "@/components/Cursor";
 
 
+
 // Load fonts with variables
 const inter = Inter({
   subsets: ["latin"],
@@ -37,6 +38,7 @@ export default function RootLayout({ children }) {
         baseTheme: dark,
       }}
     >
+
       <html
         lang="en"
         suppressHydrationWarning
@@ -49,6 +51,7 @@ export default function RootLayout({ children }) {
             enableSystem
             disableTransitionOnChange
           >
+            
             {/* Auth Status Listener for Toast Notifications */}
             <AuthListener />
             

@@ -186,7 +186,7 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
     const fetchData = async () => {
       try {
         const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_BASE}/api/industry-insights`,
+          `${process.env.NEXT_PUBLIC_API_BASE}/api/industry-insight`,
           { message: userMessage },
           { timeout: 30000, headers: { 'Content-Type': 'application/json' } }
         )
@@ -382,10 +382,10 @@ Provide ONLY valid JSON (no commentary). Replace every "YourResponse" in the tem
   return (
     <div className="min-h-screen bg-black text-white py-8 sm:py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-8 sm:mb-12 mt-8 sm:mt-16 lg:mt-20">
+        <div className="text-center mb-8 sm:mb-12 mt-8 sm:mt-16 lg:mt-20 border-none">
           <h1
   ref={headerRef}
-  className="text-5xl md:text-6xl font-bold lg:text-7xl xl:text-8xl gradient-title mt-20"
+  className="text-5xl md:text-6xl font-bold lg:text-7xl xl:text-8xl gradient-title mt-20 border-none"
 >
   Industry Insights Dashboard
 </h1>

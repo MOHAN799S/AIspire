@@ -17,7 +17,7 @@ export default function Home() {
                      theme="dark"
                      toastOptions={{
                        style: {
-                         background: '#1a1a1a',
+                         background: '#111827',
                          border: '1px solid #333',
                          color: '#fff',
                          zIndex: 10000,

@@ -234,7 +234,7 @@ export default function Charts() {
           {/* LINE CHART */}
           <div 
             ref={addChartRef}
-            className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg transition-shadow duration-300"
+            className="bg-muted/40 border rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg transition-shadow duration-300"
           >
             <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-gray-800 dark:text-gray-200">
               Monthly Progress
@@ -260,7 +260,7 @@ export default function Charts() {
           {/* PIE CHART */}
           <div 
             ref={addChartRef}
-            className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg transition-shadow duration-300"
+            className="bg-muted/40 border rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg transition-shadow duration-300"
           >
             <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-gray-800 dark:text-gray-200">
               Feature Usage
@@ -288,7 +288,7 @@ export default function Charts() {
           {/* BAR CHART */}
           <div 
             ref={addChartRef}
-            className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg transition-shadow duration-300"
+            className="bg-muted/40 border rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg transition-shadow duration-300"
           >
             <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-gray-800 dark:text-gray-200">
               Feature Engagement
@@ -319,7 +319,7 @@ export default function Charts() {
           {/* SKILLS CHART */}
           <div 
             ref={addChartRef}
-            className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg transition-shadow duration-300"
+            className="bg-muted/40 border rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg transition-shadow duration-300"
           >
             <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-gray-800 dark:text-gray-200">
               Skill Levels
@@ -345,7 +345,7 @@ export default function Charts() {
           {/* AREA CHART */}
           <div 
             ref={addChartRef}
-            className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg transition-shadow duration-300"
+            className="bg-muted/40 border rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg transition-shadow duration-300"
           >
             <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-gray-800 dark:text-gray-200">
               Weekly Activity
@@ -377,7 +377,7 @@ export default function Charts() {
           {/* COMPOSED CHART */}
           <div 
             ref={addChartRef}
-            className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg transition-shadow duration-300"
+            className="bg-muted/40 border rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg transition-shadow duration-300"
           >
             <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-gray-800 dark:text-gray-200">
               Test Performance
@@ -410,12 +410,12 @@ export default function Charts() {
           {/* RADIAL BAR CHART */}
           <div 
             ref={addChartRef}
-            className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg transition-shadow duration-300 flex flex-col items-center justify-center lg:col-span-2 xl:col-span-3"
+            className="bg-muted/40 border rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg transition-shadow duration-300 flex flex-col items-center justify-center lg:col-span-2 xl:col-span-3"
           >
             <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-gray-800 dark:text-gray-200 text-center">
               Profile Completion
             </h2>
-            <div className="h-64 sm:h-72 w-full max-w-md">
+            <div className="h-64 sm:h-72 w-full max-w-md active:border-0 border-0">
               <ResponsiveContainer width="100%" height="100%">
                 <RadialBarChart cx="50%" cy="50%" innerRadius="60%" outerRadius="90%" barSize={20} data={radialData} startAngle={90} endAngle={-270}>
                   <RadialBar minAngle={15} background clockWise dataKey="value" cornerRadius={10} />
