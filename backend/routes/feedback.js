@@ -102,124 +102,123 @@ router.post('/', async (req, res) => {
   try {
     const { name, email, type, message, pageUrl, userId } = req.body;
 
-    // Enhanced validation
+    // ---------- 1. Normalize ----------
+    const cleanedName = (name ?? '').trim();
+    const cleanedEmail = (email ?? '').trim().toLowerCase();
+    const cleanedMessage = (message ?? '').trim();
+    const cleanedPageUrl = (pageUrl ?? '').trim();
+    const cleanedUserId = (userId ?? '').trim();
+
     const errors = [];
 
-    // Name validation
-    if (!name || !name.trim()) {
-      errors.push('Name is required');
-    } else if (name.trim().length < 2) {
-      errors.push('Name must be at least 2 characters');
-    } else if (name.trim().length > 100) {
-      errors.push('Name must be less than 100 characters');
-    }
+    // ---------- 2. Validation ----------
+    if (!cleanedName) errors.push('Name is required');
+    else if (cleanedName.length < 2) errors.push('Name must be at least 2 characters');
+    else if (cleanedName.length > 100) errors.push('Name must be less than 100 characters');
 
-    // Email validation
     const emailRegex = /^\S+@\S+\.\S+$/;
-    if (!email || !email.trim()) {
-      errors.push('Email is required');
-    } else if (!emailRegex.test(email)) {
-      errors.push('Please provide a valid email address');
-    } else if (email.length > 160) {
-      errors.push('Email must be less than 160 characters');
-    }
+    if (!cleanedEmail) errors.push('Email is required');
+    else if (!emailRegex.test(cleanedEmail)) errors.push('Please provide a valid email address');
+    else if (cleanedEmail.length > 160) errors.push('Email must be less than 160 characters');
 
-    // Message validation
-    if (!message || !message.trim()) {
-      errors.push('Message is required');
-    } else if (message.trim().length < 10) {
-      errors.push('Message must be at least 10 characters');
-    } else if (message.trim().length > 5000) {
-      errors.push('Message must be less than 5000 characters');
-    }
+    if (!cleanedMessage) errors.push('Message is required');
+    else if (cleanedMessage.length < 10) errors.push('Message must be at least 10 characters');
+    else if (cleanedMessage.length > 5000) errors.push('Message must be less than 5000 characters');
 
-    // Type validation
     const validTypes = ['bug', 'feature', 'suggestion', 'other'];
-    if (type && !validTypes.includes(type)) {
-      errors.push('Invalid feedback type');
-    }
+    const feedbackType = validTypes.includes(type) ? type : 'suggestion';
 
     if (errors.length > 0) {
-      return res.status(400).json({
-        message: 'Validation failed',
-        errors,
-      });
+      return res.status(400).json({ success: false, message: 'Validation failed', errors });
     }
 
-    // Get user agent and IP
+    // ---------- 3. Meta ----------
     const userAgent = req.headers['user-agent'] || '';
-    const ipAddress = req.headers['x-forwarded-for'] || 
-                     req.headers['x-real-ip'] || 
-                     req.socket.remoteAddress || 
-                     '';
+    const ipHeader =
+      req.headers['x-forwarded-for'] ||
+      req.headers['x-real-ip'] ||
+      req.socket?.remoteAddress ||
+      '';
+    const ipAddress = Array.isArray(ipHeader)
+      ? ipHeader[0]
+      : ipHeader.split(',')[0].trim();
 
-    // Create feedback document
+    // ---------- 4. Save Feedback ----------
     const feedbackData = {
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      type: type || 'suggestion',
-      message: message.trim(),
-      pageUrl: pageUrl?.trim() || '',
-      userId: userId?.trim() || '',
+      name: cleanedName,
+      email: cleanedEmail,
+      type: feedbackType,
+      message: cleanedMessage,
+      pageUrl: cleanedPageUrl,
+      userId: cleanedUserId,
       userAgent,
-      ipAddress: Array.isArray(ipAddress) ? ipAddress[0] : ipAddress.split(',')[0].trim(),
+      ipAddress,
     };
 
     const savedFeedback = await Feedback.create(feedbackData);
 
-    // Send emails asynchronously but wait for them
+    // ---------- 5. Email Sending ----------
+    let adminMailInfo = null;
     try {
-      await Promise.all([
-        sendFeedbackNotification(savedFeedback),
-        sendUserThankYouEmail(savedFeedback)
-      ]);
-      
-      // Mark email as sent
-      await savedFeedback.markEmailSent();
-      
-      console.log('✅ Emails sent successfully for feedback:', savedFeedback._id);
-    } catch (emailError) {
-      console.error('❌ Error sending emails:', emailError);
-      // Don't fail the request if email fails - feedback is still saved
+      adminMailInfo = await sendFeedbackNotification(savedFeedback);
+    } catch (err) {
+      console.error('Admin notification failed:', err);
     }
 
-    res.status(201).json({
+    if (adminMailInfo) {
+      try {
+        await sendUserThankYouEmail(savedFeedback);
+      } catch (err) {
+        console.error('User thank-you email failed:', err);
+      }
+    }
+
+    try {
+      if (typeof savedFeedback.markEmailSent === 'function') {
+        await savedFeedback.markEmailSent();
+      }
+    } catch (err) {
+      console.error('Failed to mark email sent:', err);
+    }
+
+    // ---------- 6. Response ----------
+    return res.status(201).json({
       success: true,
-      message: 'Thank you for your feedback! We\'ve received your message.',
+      message: "Thank you for your feedback! We've received your message.",
       feedback: {
         id: savedFeedback._id,
         type: savedFeedback.type,
         status: savedFeedback.status,
         createdAt: savedFeedback.createdAt,
-      }
+      },
     });
-
   } catch (err) {
-    console.error('Error saving feedback:', err);
-    
-    // Handle Mongoose validation errors
+    console.error('Error in /api/feedback:', err);
+
     if (err.name === 'ValidationError') {
-      const validationErrors = Object.values(err.errors).map(e => e.message);
       return res.status(400).json({
+        success: false,
         message: 'Validation error',
-        errors: validationErrors
+        errors: Object.values(err.errors).map(e => e.message),
       });
     }
 
-    // Handle duplicate key errors
     if (err.code === 11000) {
       return res.status(409).json({
+        success: false,
         message: 'Duplicate feedback submission detected',
-        error: 'This feedback has already been submitted'
+        error: 'This feedback has already been submitted',
       });
     }
 
-    res.status(500).json({ 
+    return res.status(500).json({
+      success: false,
       message: 'Server error while submitting feedback',
-      error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+      error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error',
     });
   }
 });
+
 
 /**
  * PATCH /api/feedback/:id
@@ -269,6 +268,7 @@ router.patch('/:id', async (req, res) => {
       message: 'Feedback updated successfully',
       feedback: updatedFeedback
     });
+    console.log('Feedback updated:', id);
   } catch (err) {
     console.error('Error updating feedback:', err);
     res.status(500).json({ 
@@ -300,6 +300,7 @@ router.delete('/:id', async (req, res) => {
       success: true,
       message: 'Feedback deleted successfully'
     });
+    console.log('Feedback deleted:', id);
   } catch (err) {
     console.error('Error deleting feedback:', err);
     res.status(500).json({ 

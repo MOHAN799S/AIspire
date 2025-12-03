@@ -19,7 +19,7 @@ const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 // CORS
 app.use(
   cors({
-    origin: [client_url, client_url_port],
+    origin: client_url,
     methods: ['GET', 'POST','PATCH','DELETE'],
     credentials: true,
   })

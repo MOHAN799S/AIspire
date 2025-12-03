@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import "../globals.css";
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import {
@@ -152,6 +153,7 @@ const LearningPathsCard = () => {
   return (
     <section className="relative bg-black text-white min-h-screen overflow-hidden py-16">
       <div className="relative z-10 container mx-auto px-4 max-w-7xl">
+        
         <div className="text-center mb-8">
           <h2 className="gradient-title text-5xl sm:text-6xl lg:text-7xl font-bold mb-4 mt-20 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
             Learning Paths

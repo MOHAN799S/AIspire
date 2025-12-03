@@ -11,35 +11,43 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Admin notification email
+// Admin notification email - Clean and minimal like the example
 const sendFeedbackNotification = async (feedback) => {
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 
   if (!ADMIN_EMAIL) {
-    console.warn('⚠️ ADMIN_EMAIL not set, skipping feedback notification.');
-    return;
+    console.warn('⚠️ ADMIN_EMAIL not configured');
+    return null;
   }
 
+  const safeMessage = (feedback.message || '').replace(/\r\n/g, '\n').replace(/\0/g, '').slice(0, 5000);
   const subject = `New ${feedback.type || 'feedback'} from ${feedback.name || 'Anonymous'}`;
-  const type = (feedback.type || 'other').toLowerCase();
-
+  
   const typeLabelMap = {
     bug: 'Bug Report',
     feature: 'Feature Request',
-    suggestion: 'General Suggestion',
-    other: 'Other',
+    suggestion: 'Suggestion',
+    other: 'General Feedback',
   };
 
-  const typeLabel = typeLabelMap[type] || 'Feedback';
-
-  const badgeStyleMap = {
-    bug: 'background:#fee2e2; color:#991b1b;',
-    feature: 'background:#dcfce7; color:#166534;',
-    suggestion: 'background:#dbeafe; color:#1e40af;',
-    other: 'background:#f3f4f6; color:#374151;',
+  const typeColorMap = {
+    bug: '#fee2e2',
+    feature: '#dcfce7',
+    suggestion: '#dbeafe',
+    other: '#f3f4f6',
   };
 
-  const badgeStyle = badgeStyleMap[type] || badgeStyleMap.other;
+  const typeTextColorMap = {
+    bug: '#991b1b',
+    feature: '#166534',
+    suggestion: '#1e40af',
+    other: '#374151',
+  };
+
+  const type = (feedback.type || 'other').toLowerCase();
+  const typeLabel = typeLabelMap[type] || 'General Feedback';
+  const typeColor = typeColorMap[type] || typeColorMap.other;
+  const typeTextColor = typeTextColorMap[type] || typeTextColorMap.other;
 
   const html = `
     <!DOCTYPE html>
@@ -48,19 +56,19 @@ const sendFeedbackNotification = async (feedback) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
       </head>
-      <body style="margin:0; padding:0; background:#f9fafb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f9fafb; padding:40px 20px;">
+      <body style="margin:0; padding:0; background:#f5f5f5; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#f5f5f5; padding:40px 20px;">
           <tr>
             <td align="center">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:650px; background:#ffffff; border-radius:12px; overflow:hidden; border:1px solid #e5e7eb;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; background:#ffffff; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.1);">
                 
                 <!-- Header -->
                 <tr>
-                  <td style="padding:40px 40px 32px 40px;">
-                    <h1 style="margin:0 0 8px 0; color:#111827; font-size:26px; font-weight:700; letter-spacing:-0.5px;">
+                  <td style="padding:40px 40px 20px;">
+                    <h1 style="margin:0 0 8px; color:#1f2937; font-size:24px; font-weight:600;">
                       New Feedback Received
                     </h1>
-                    <p style="margin:0; color:#6b7280; font-size:14px; font-weight:500;">
+                    <p style="margin:0; color:#6b7280; font-size:14px;">
                       AIspire Platform Notification
                     </p>
                   </td>
@@ -69,82 +77,76 @@ const sendFeedbackNotification = async (feedback) => {
                 <!-- Divider -->
                 <tr>
                   <td style="padding:0 40px;">
-                    <div style="height:1px; background:#e5e7eb;"></div>
+                    <div style="border-top:1px solid #e5e7eb;"></div>
                   </td>
                 </tr>
 
                 <!-- Type Badge -->
                 <tr>
-                  <td style="padding:24px 40px;">
-                    <span style="${badgeStyle} padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600; letter-spacing:0.3px; display:inline-block;">
+                  <td style="padding:24px 40px 20px;">
+                    <div style="display:inline-block; background:${typeColor}; color:${typeTextColor}; padding:6px 12px; border-radius:4px; font-size:13px; font-weight:500;">
                       ${typeLabel}
-                    </span>
+                    </div>
                   </td>
                 </tr>
 
-                <!-- Contact Information -->
+                <!-- User Details -->
                 <tr>
-                  <td style="padding:0 40px 24px 40px;">
-                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <td style="padding:0 40px 20px;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                       <tr>
-                        <td style="padding:16px 0;">
-                          <table width="100%" cellpadding="8" cellspacing="0" border="0">
-                            <tr>
-                              <td width="120" style="color:#6b7280; font-size:14px; font-weight:600; padding:8px 0;">
-                                Name
-                              </td>
-                              <td style="color:#111827; font-size:14px; font-weight:500; padding:8px 0;">
-                                ${feedback.name || 'Anonymous'}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td style="color:#6b7280; font-size:14px; font-weight:600; padding:8px 0;">
-                                Email
-                              </td>
-                              <td style="color:#111827; font-size:14px; font-weight:500; padding:8px 0;">
-                                ${feedback.email ? `<a href="mailto:${feedback.email}" style="color:#2563eb; text-decoration:none;">${feedback.email}</a>` : 'Not provided'}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td style="color:#6b7280; font-size:14px; font-weight:600; padding:8px 0;">
-                                User ID
-                              </td>
-                              <td style="color:#111827; font-size:14px; font-weight:500; padding:8px 0;">
-                                ${feedback.userId || 'Guest User'}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td style="color:#6b7280; font-size:14px; font-weight:600; padding:8px 0; vertical-align:top;">
-                                Page URL
-                              </td>
-                              <td style="color:#111827; font-size:14px; font-weight:500; padding:8px 0; word-break:break-all;">
-                                ${feedback.pageUrl ? `<a href="${feedback.pageUrl}" style="color:#2563eb; text-decoration:none;" target="_blank">${feedback.pageUrl}</a>` : 'Not provided'}
-                              </td>
-                            </tr>
-                          </table>
+                        <td style="padding:8px 0; width:100px; color:#6b7280; font-size:14px; vertical-align:top;">Name</td>
+                        <td style="padding:8px 0; color:#1f2937; font-size:14px; font-weight:500;">${feedback.name || 'Anonymous'}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:8px 0; color:#6b7280; font-size:14px; vertical-align:top;">Email</td>
+                        <td style="padding:8px 0;">
+                          ${feedback.email ? `<a href="mailto:${feedback.email}" style="color:#2563eb; text-decoration:none; font-size:14px;">${feedback.email}</a>` : '<span style="color:#9ca3af; font-size:14px;">Not provided</span>'}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:8px 0; color:#6b7280; font-size:14px; vertical-align:top;">User ID</td>
+                        <td style="padding:8px 0; color:#1f2937; font-size:14px; font-family:monospace;">
+                          ${feedback.userId || '<span style="color:#9ca3af;">Not logged in</span>'}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:8px 0; color:#6b7280; font-size:14px; vertical-align:top;">Page URL</td>
+                        <td style="padding:8px 0;">
+                          ${feedback.pageUrl ? `<a href="${feedback.pageUrl}" style="color:#2563eb; text-decoration:none; font-size:13px; word-break:break-all;">${feedback.pageUrl}</a>` : '<span style="color:#9ca3af; font-size:14px;">Not provided</span>'}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:8px 0; color:#6b7280; font-size:14px; vertical-align:top;">Page URL</td>
+                        <td style="padding:8px 0;">
+                          ${feedback.ipAddress ? `<h1  style="color:#2563eb; text-decoration:none; font-size:13px; word-break:break-all;">${feedback.ipAddress}</h1>` : '<span style="color:#9ca3af; font-size:14px;">Not provided</span>'}
                         </td>
                       </tr>
                     </table>
                   </td>
                 </tr>
 
-                <!-- Message -->
+                <!-- Message Box -->
                 <tr>
-                  <td style="padding:0 40px 32px 40px;">
-                    <div style="background:#f9fafb; border-radius:8px; padding:20px; border-left:3px solid #111827;">
-                      <p style="margin:0 0 8px 0; color:#6b7280; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">
-                        Message
-                      </p>
-                      <div style="color:#374151; font-size:14px; line-height:1.7; white-space:pre-wrap;">${feedback.message}</div>
+                  <td style="padding:0 40px 30px;">
+                    <div style="background:#f9fafb; border:1px solid #e5e7eb; border-left:3px solid #1f2937; border-radius:4px; padding:20px;">
+                      <div style="color:#6b7280; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px;">
+                        MESSAGE
+                      </div>
+                      <div style="color:#1f2937; font-size:14px; line-height:1.6; white-space:pre-wrap; word-wrap:break-word;">
+${safeMessage}
+                      </div>
                     </div>
                   </td>
                 </tr>
 
                 <!-- Footer -->
                 <tr>
-                  <td style="background:#f9fafb; padding:24px 40px; border-top:1px solid #e5e7eb;">
-                    <p style="margin:0; color:#9ca3af; font-size:12px; text-align:center; line-height:1.6;">
-                      AIspire · Automated notification<br>
+                  <td style="padding:20px 40px 40px; text-align:center; border-top:1px solid #e5e7eb;">
+                    <p style="margin:0 0 16px; color:#6b7280; font-size:13px;">
+                      AIspire · Automated notification
+                    </p>
+                    <p style="margin:0; color:#9ca3af; font-size:12px;">
                       © ${new Date().getFullYear()} All rights reserved
                     </p>
                   </td>
@@ -158,22 +160,31 @@ const sendFeedbackNotification = async (feedback) => {
     </html>
   `;
 
-  await transporter.sendMail({
-    from: `"AIspire Notifications" <${process.env.SMTP_USER}>`,
-    to: ADMIN_EMAIL,
-    subject,
-    html,
-  });
+  try {
+    const info = await transporter.sendMail({
+      from: `"AIspire Notifications" <${process.env.SMTP_USER}>`,
+      to: ADMIN_EMAIL,
+      subject,
+      html,
+    });
+
+    console.log('✓ Admin notification sent');
+    return info;
+  } catch (err) {
+    console.error('✗ Admin notification failed:', err.message);
+    throw err;
+  }
 };
 
-// User thank-you email
+// User thank you email - Exactly like the example image
 const sendUserThankYouEmail = async (feedback) => {
   if (!feedback.email) {
-    console.warn('⚠️ No user email provided, skipping user thank-you email.');
-    return;
+    console.warn('⚠️ User email not provided');
+    return null;
   }
 
-  const subject = 'Thank you for your feedback on AIspire';
+  const subject = 'Thank You for Your Feedback';
+  const safeMessage = (feedback.message || '').replace(/\r\n/g, '\n').replace(/\0/g, '').slice(0, 5000);
 
   const html = `
     <!DOCTYPE html>
@@ -182,19 +193,19 @@ const sendUserThankYouEmail = async (feedback) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
       </head>
-      <body style="margin:0; padding:0; background:#f9fafb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f9fafb; padding:40px 20px;">
+      <body style="margin:0; padding:0; background:#f5f5f5; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#f5f5f5; padding:40px 20px;">
           <tr>
             <td align="center">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px; background:#ffffff; border-radius:12px; overflow:hidden; border:1px solid #e5e7eb;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; background:#ffffff; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.1);">
                 
                 <!-- Header -->
                 <tr>
-                  <td style="padding:40px 40px 32px 40px;">
-                    <h1 style="margin:0 0 8px 0; color:#111827; font-size:26px; font-weight:700; letter-spacing:-0.5px;">
+                  <td style="padding:40px 40px 20px;">
+                    <h1 style="margin:0 0 8px; color:#1f2937; font-size:24px; font-weight:600;">
                       Thank You for Your Feedback
                     </h1>
-                    <p style="margin:0; color:#6b7280; font-size:14px; font-weight:500;">
+                    <p style="margin:0; color:#6b7280; font-size:14px;">
                       We appreciate you taking the time
                     </p>
                   </td>
@@ -203,56 +214,78 @@ const sendUserThankYouEmail = async (feedback) => {
                 <!-- Divider -->
                 <tr>
                   <td style="padding:0 40px;">
-                    <div style="height:1px; background:#e5e7eb;"></div>
+                    <div style="border-top:1px solid #e5e7eb;"></div>
                   </td>
                 </tr>
 
-                <!-- Content -->
+                <!-- Body -->
                 <tr>
-                  <td style="padding:32px 40px;">
-                    <p style="margin:0 0 20px 0; color:#374151; font-size:15px; line-height:1.6;">
-                      Hi <strong style="color:#111827;">${feedback.name || 'there'}</strong>,
+                  <td style="padding:30px 40px 20px;">
+                    <p style="margin:0 0 20px; color:#1f2937; font-size:15px; line-height:1.6;">
+                      Hi <strong>${feedback.name || 'there'}</strong>,
                     </p>
-                    <p style="margin:0 0 24px 0; color:#4b5563; font-size:14px; line-height:1.7;">
+                    <p style="margin:0; color:#374151; font-size:15px; line-height:1.6;">
                       Thank you for sharing your thoughts with us. We've received your feedback and our team will review it carefully. Your input is valuable and helps us improve AIspire for everyone.
                     </p>
+                  </td>
+                </tr>
 
-                    <!-- Feedback Summary -->
-                    <div style="background:#f9fafb; border-radius:8px; padding:20px; margin-bottom:24px; border-left:3px solid #111827;">
-                      <p style="margin:0 0 8px 0; color:#6b7280; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">
-                        Your Message
-                      </p>
-                      <div style="color:#374151; font-size:14px; line-height:1.7; white-space:pre-wrap;">${feedback.message}</div>
-                    </div>
-
-                    <p style="margin:0 0 24px 0; color:#4b5563; font-size:14px; line-height:1.7;">
-                      If we need additional information or have updates, we'll contact you at <strong style="color:#111827;">${feedback.email}</strong>.
-                    </p>
-
-                    <!-- Signature -->
-                    <div style="margin-top:32px; padding-top:24px; border-top:1px solid #e5e7eb;">
-                      <p style="margin:0; color:#374151; font-size:14px; line-height:1.6;">
-                        Best regards,
-                      </p>
-                      <p style="margin:8px 0 0 0; color:#111827; font-size:15px; font-weight:600; line-height:1.5;">
-                        Mohan<br>
-                        <span style="color:#6b7280; font-size:13px; font-weight:500;">Founder & Developer</span><br>
-                        <span style="color:#9ca3af; font-size:12px; font-weight:400;">AIspire · 404 Graduate</span>
-                      </p>
+                <!-- Message Box -->
+                <tr>
+                  <td style="padding:0 40px 20px;">
+                    <div style="background:#f9fafb; border:1px solid #e5e7eb; border-left:3px solid #1f2937; border-radius:4px; padding:20px;">
+                      <div style="color:#6b7280; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px;">
+                        YOUR MESSAGE
+                      </div>
+                      <div style="color:#1f2937; font-size:14px; line-height:1.6; white-space:pre-wrap; word-wrap:break-word;">
+${safeMessage}
+                      </div>
                     </div>
                   </td>
                 </tr>
 
-                <!-- Footer -->
+                <!-- Contact Info -->
                 <tr>
-                  <td style="background:#f9fafb; padding:24px 40px; border-top:1px solid #e5e7eb;">
-                    <div style="text-align:center; margin-bottom:12px;">
-                      <a href="https://your-portfolio-url.com" style="color:#111827; text-decoration:none; font-size:13px; font-weight:500; margin:0 12px;">Portfolio</a>
-                      <span style="color:#d1d5db;">·</span>
-                      <a href=${AIspire_url} style="color:#111827; text-decoration:none; font-size:13px; font-weight:500; margin:0 12px;">AIspire</a>
-                    </div>
-                    <p style="margin:0; color:#9ca3af; font-size:12px; text-align:center; line-height:1.6;">
-                      AIspire · Intelligent resume & AI tools<br>
+                  <td style="padding:0 40px 30px;">
+                    <p style="margin:0; color:#374151; font-size:14px; line-height:1.6;">
+                      If we need additional information or have updates, we'll contact you at <a href="mailto:${feedback.email}" style="color:#2563eb; text-decoration:none;">${feedback.email}</a>.
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Signature -->
+                <tr>
+                  <td style="padding:0 40px 30px;">
+                    <p style="margin:0 0 4px; color:#1f2937; font-size:15px;">
+                      Best regards,
+                    </p>
+                    <p style="margin:0 0 4px; color:#1f2937; font-size:15px; font-weight:600;">
+                      Mohan
+                    </p>
+                    <p style="margin:0 0 2px; color:#6b7280; font-size:14px;">
+                      Founder & Developer
+                    </p>
+                    <p style="margin:0; color:#9ca3af; font-size:13px;">
+                      AIspire · 404 Graduate
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Footer Links -->
+                <tr>
+                  <td style="padding:20px 40px 30px; text-align:center; border-top:1px solid #e5e7eb;">
+                    <a href="${AIspire_url}" style="color:#1f2937; text-decoration:none; font-size:14px; font-weight:500; margin:0 12px;">Portfolio</a>
+                    <a href="${AIspire_url}" style="color:#1f2937; text-decoration:none; font-size:14px; font-weight:500; margin:0 12px;">AIspire</a>
+                  </td>
+                </tr>
+
+                <!-- Copyright -->
+                <tr>
+                  <td style="padding:0 40px 40px; text-align:center;">
+                    <p style="margin:0 0 4px; color:#9ca3af; font-size:12px;">
+                      AIspire · Intelligent resume & AI tools
+                    </p>
+                    <p style="margin:0; color:#9ca3af; font-size:12px;">
                       © ${new Date().getFullYear()} All rights reserved
                     </p>
                   </td>
@@ -266,12 +299,20 @@ const sendUserThankYouEmail = async (feedback) => {
     </html>
   `;
 
-  await transporter.sendMail({
-    from: `"AIspire" <${process.env.SMTP_USER}>`,
-    to: feedback.email,
-    subject,
-    html,
-  });
+  try {
+    const info = await transporter.sendMail({
+      from: `"AIspire" <${process.env.SMTP_USER}>`,
+      to: feedback.email,
+      subject,
+      html,
+    });
+
+    console.log('✓ User confirmation sent');
+    return info;
+  } catch (err) {
+    console.error('✗ User confirmation failed:', err.message);
+    throw err;
+  }
 };
 
 module.exports = {

@@ -26,7 +26,7 @@ type FeedbackItem = {
 type FilterType = 'all' | 'bug' | 'feature' | 'suggestion' | 'other';
 type FilterStatus = 'all' | 'open' | 'in_progress' | 'resolved' | 'archived';
 
-const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL || '';
+const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL ;
 
 const CustomSelect = ({ value, onChange, options, label, icon }: any) => {
   const [isOpen, setIsOpen] = useState(false);
