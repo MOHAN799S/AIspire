@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useUser } from '@clerk/nextjs';
 import { ChevronDown, Search, X, Filter, Edit2, Trash2, Eye, Check, AlertCircle } from 'lucide-react';
+import { useAuth } from '@/components/auth/AuthContext';
 
 type FeedbackItem = {
   _id: string;
@@ -75,7 +75,9 @@ const CustomSelect = ({ value, onChange, options, label, icon }: any) => {
 };
 
 const FeedbackAdminPage = () => {
-  const { isSignedIn, isLoaded, user } = useUser();
+  const { user, loading: authLoading } = useAuth();
+  
+    const isSignedIn = !!user;
 
   const [feedbacks, setFeedbacks] = useState<FeedbackItem[]>([]);
   const [filteredFeedbacks, setFilteredFeedbacks] = useState<FeedbackItem[]>([]);
@@ -99,13 +101,13 @@ const FeedbackAdminPage = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showUpdateConfirm, setShowUpdateConfirm] = useState(false);
 
-  const isAdmin =
-    !!user?.primaryEmailAddress?.emailAddress &&
-    user.primaryEmailAddress.emailAddress === ADMIN_EMAIL;
+
+const isAdmin = user?.email === ADMIN_EMAIL;
+
 
   const fetchFeedback = async () => {
     try {
-      const res = await fetch('http://192.168.31.251:5000/api/feedback');
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/feedback`);
       if (!res.ok) {
         throw new Error('Failed to fetch feedback');
       }
@@ -324,7 +326,7 @@ const FeedbackAdminPage = () => {
     };
   }, []);
 
-  if (!isLoaded) {
+  if (authLoading) {
    return (
   <div className="min-h-screen flex items-center justify-center bg-black px-4">
     <div className="bg-muted/20 border border-neutral-800 rounded-2xl px-12 py-10 w-full max-w-xl">

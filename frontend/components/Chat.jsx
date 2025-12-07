@@ -1,9 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import { MessageCircle, X, Send, Sparkles, Bot, User, Trash2, AlertCircle, Check, CheckCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "./auth/AuthContext";
 
 // Format timestamp to human-readable format
 function formatTimestamp(timestamp) {
@@ -92,8 +91,10 @@ function MessageStatus({ status }) {
 }
 
 export default function Chatbot() {
-  const { user, isSignedIn, isLoaded } = useUser();
-  const userId = isSignedIn ? user?.id : null;
+  // Replace Clerk with custom auth
+  const { user, loading } = useAuth();
+  const isSignedIn = !!user;
+  const userId = user?.id || null;
 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -104,7 +105,7 @@ export default function Chatbot() {
 
   // Load chat history from local storage only
   useEffect(() => {
-    if (!isLoaded) return;
+    if (loading) return;
 
     const local = localStorage.getItem("aispire-chat-local");
     if (local) {
@@ -114,7 +115,7 @@ export default function Chatbot() {
         console.error("Failed to parse local messages:", err);
       }
     }
-  }, [isLoaded]);
+  }, [loading]);
 
   // Save messages to local storage
   useEffect(() => {
@@ -161,7 +162,7 @@ export default function Chatbot() {
   }, [messages]);
 
   const toggleChat = () => {
-    if (!isOpen && !isSignedIn && isLoaded) {
+    if (!isOpen && !isSignedIn && !loading) {
       setShowLoginPrompt(true);
       setTimeout(() => setShowLoginPrompt(false), 3000);
     }
@@ -208,21 +209,26 @@ export default function Chatbot() {
     setIsTyping(true);
 
     try {
-      const res = await axios.post(
+      const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE}/api/chat`,
         {
-          message: userMessage,
-          userId: userId
-        },
-        {
-          timeout: 30000,
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json'
-          }
+          },
+          body: JSON.stringify({
+            message: userMessage,
+            userId: userId
+          })
         }
       );
       
-      const botText = res.data?.reply || "Sorry, I couldn't get a response.";
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
+      const data = await res.json();
+      const botText = data?.reply || "Sorry, I couldn't get a response.";
       
       // Update user message to 'read' status
       setMessages(prev => prev.map((msg, idx) => 
@@ -245,11 +251,11 @@ export default function Chatbot() {
       
       let errorMessage = "⚠️ Something went wrong. Please try again.";
       
-      if (err.code === 'ECONNABORTED') {
+      if (err.name === 'AbortError') {
         errorMessage = "⚠️ Request timeout. Please check your connection and try again.";
-      } else if (err.response) {
-        errorMessage = `⚠️ Server error: ${err.response.status}. Please try again later.`;
-      } else if (err.request) {
+      } else if (err.message.includes('status:')) {
+        errorMessage = `⚠️ Server error. Please try again later.`;
+      } else if (err.message.includes('fetch')) {
         errorMessage = "⚠️ Network error. Please check your internet connection.";
       }
       
@@ -304,7 +310,7 @@ export default function Chatbot() {
               <div className="flex items-center gap-2">
                 <Sparkles size={16} className="text-purple-400" />
                 <span className="text-sm font-medium text-white">
-                AIspire Assistant -&gt;
+                AIspire Assistant →
                 </span>
               </div>
             </motion.div>
@@ -534,10 +540,11 @@ export default function Chatbot() {
 
             {/* Input Area */}
             <div className="p-4 border-t flex-shrink-0 bg-gray-900/80 border-gray-700/50">
-              <form onSubmit={sendMessage} className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 <input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage(e)}
                   placeholder={isSignedIn ? "Ask me anything..." : "Please sign in to chat"}
                   disabled={!isSignedIn}
                   className="flex-1 px-4 py-3 rounded-2xl text-sm transition-all focus:outline-none focus:ring-2 bg-gray-800 text-white placeholder-gray-500 focus:ring-purple-500/50 disabled:opacity-50"
@@ -545,7 +552,8 @@ export default function Chatbot() {
                 <motion.button
                   whileHover={{ scale: isSignedIn && input.trim() ? 1.05 : 1 }}
                   whileTap={{ scale: isSignedIn && input.trim() ? 0.95 : 1 }}
-                  type="submit"
+                  type="button"
+                  onClick={sendMessage}
                   disabled={!isSignedIn || !input.trim()}
                   className={`p-3 rounded-2xl transition-all shadow-lg ${
                     isSignedIn && input.trim()
@@ -555,7 +563,7 @@ export default function Chatbot() {
                 >
                   <Send size={20} />
                 </motion.button>
-              </form>
+              </div>
             </div>
           </motion.div>
         )}

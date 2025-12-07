@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/components/auth/AuthContext';
 
 const ReportPage = () => {
   const feedbackCategories = [
@@ -12,7 +12,10 @@ const ReportPage = () => {
     { value: 'other', label: 'Other', icon: '📝', description: 'General feedback' },
   ];
 
-  const { isSignedIn, user, isLoaded } = useUser();
+  // Use custom auth context
+  const { user, loading: authLoading } = useAuth();
+
+  const isSignedIn = !!user;
   const router = useRouter();
   
   const [form, setForm] = useState({
@@ -33,8 +36,8 @@ const ReportPage = () => {
     if (isSignedIn && user) {
       setForm(prev => ({
         ...prev,
-        name: user.fullName || user.firstName || '',
-        email: user.primaryEmailAddress?.emailAddress || '',
+        name: user.username || '',
+        email: user.email || '',
         pageUrl: typeof window !== 'undefined' ? window.location.href : '',
       }));
     }
@@ -127,8 +130,10 @@ const ReportPage = () => {
         pageUrl: form.pageUrl || window.location.href,
         userId: user?.id,
       };
-//`${process.env.NEXT_PUBLIC_API_BASE}/api/feedback`
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/feedback`, {
+
+      // `${process.env.NEXT_PUBLIC_API_BASE}/api/feedback`
+
+      const res = await fetch('http://localhost:5000/api/feedback', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -154,8 +159,8 @@ const ReportPage = () => {
       // Reset form after successful submission
       setTimeout(() => {
         setForm({
-          name: user?.fullName || user?.firstName || '',
-          email: user?.primaryEmailAddress?.emailAddress || '',
+          name: user?.username || '',
+          email: user?.email || '',
           type: 'suggestion',
           message: '',
           pageUrl: window.location.href,
@@ -172,10 +177,10 @@ const ReportPage = () => {
   };
 
   // Loading state
-  if (!isLoaded) {
+  if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4 py-10 ">
-        <div className="w-full max-w-md ">
+      <div className="min-h-screen flex items-center justify-center px-4 py-10">
+        <div className="w-full max-w-md">
           <div className="border border-neutral-800 rounded-xl p-8 text-center">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center">
               <svg className="animate-spin h-8 w-8 text-purple-500" fill="none" viewBox="0 0 24 24">
@@ -197,7 +202,7 @@ const ReportPage = () => {
         <div className="w-full max-w-md">
           <div className="border border-neutral-800 rounded-xl p-8 text-center">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-sky-500/10 flex items-center justify-center">
-              <svg className="w-8 h-8 " fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
@@ -207,13 +212,7 @@ const ReportPage = () => {
             </p>
             <button
               onClick={() => router.push('/sign-in')}
-              className="w-full rounded-lg px-6 py-3 text-sm font-semibold bg-gradient-to-br from-blue-400/80 to-purple-600/80
-backdrop-blur-sm
-hover:from-blue-500/90 hover:to-purple-700/90
-shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]
-hover:shadow-[0_8px_40px_0_rgba(31,38,135,0.5)]
-border border-white/20
-transform hover:scale-105 transition-all duration-300 text-white transition-colors"
+              className="w-full rounded-lg px-6 py-3 text-sm font-semibold bg-gradient-to-br from-blue-400/80 to-purple-600/80 backdrop-blur-sm hover:from-blue-500/90 hover:to-purple-700/90 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_8px_40px_0_rgba(31,38,135,0.5)] border border-white/20 transform hover:scale-105 transition-all duration-300 text-white"
             >
               Sign In to Continue
             </button>
@@ -233,21 +232,21 @@ transform hover:scale-105 transition-all duration-300 text-white transition-colo
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-full bg-sky-500/10 flex items-center justify-center">
                 <span className="text-sky-400 font-semibold text-lg">
-                  {user?.firstName?.charAt(0) || user?.emailAddresses[0]?.emailAddress?.charAt(0) || 'U'}
+                  {user?.username?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
                 </span>
               </div>
               <div>
-                <h1 className="text-3xl md:text-4xl font-semibold text-white ">
+                <h1 className="text-3xl md:text-4xl font-semibold text-white">
                   Submit Feedback
                 </h1>
               </div>
             </div>
             <p className="text-neutral-400 leading-relaxed">
-              Hello {user?.firstName || 'there'}! We value your input. Please share any issues you&ve encountered or suggestions for improvement to help us enhance the AIspire platform.
+              Hello {user?.username || 'there'}! We value your input. Please share any issues you&apos;ve encountered or suggestions for improvement to help us enhance the AIspire platform.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6" name='feedback_form'>
+          <form onSubmit={handleSubmit} className="space-y-6" name="feedback_form">
             
             {/* Name and Email Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -356,7 +355,7 @@ transform hover:scale-105 transition-all duration-300 text-white transition-colo
                   <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  Thank you for your feedback! We&quote;ve received your submission and sent you a confirmation email. Our team will review it shortly.
+                  Thank you for your feedback! We&apos;ve received your submission and sent you a confirmation email. Our team will review it shortly.
                 </p>
               </div>
             )}
@@ -377,13 +376,7 @@ transform hover:scale-105 transition-all duration-300 text-white transition-colo
             <button
               type="submit"
               disabled={loading || !isFormValid}
-              className="w-full rounded-lg px-6 py-3 text-sm font-extrabold bg-gradient-to-br from-blue-400/80 to-purple-600/80
-backdrop-blur-sm
-hover:from-blue-500/90 hover:to-purple-700/90
-shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]
-hover:shadow-[0_8px_40px_0_rgba(31,38,135,0.5)]
-border border-white/20
-transform hover:scale-105 transition-all duration-300 disabled:bg-neutral-700 disabled:text-neutral-500 text-white transition-all disabled:cursor-not-allowed"
+              className="w-full rounded-lg px-6 py-3 text-sm font-extrabold bg-gradient-to-br from-blue-400/80 to-purple-600/80 backdrop-blur-sm hover:from-blue-500/90 hover:to-purple-700/90 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_8px_40px_0_rgba(31,38,135,0.5)] border border-white/20 transform hover:scale-105 transition-all duration-300 disabled:bg-neutral-700 disabled:text-neutral-500 text-white disabled:cursor-not-allowed disabled:transform-none disabled:hover:scale-100"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">

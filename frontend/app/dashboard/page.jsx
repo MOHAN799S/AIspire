@@ -1,17 +1,17 @@
 'use client'
 
-import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
 import Charts from './components/Charts'
 import { Loader2 } from 'lucide-react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useAuth } from '@/components/auth/AuthContext'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function DashboardPage() {
-  const { isSignedIn, isLoaded } = useUser()
+  const { user, loading } = useAuth() 
   const router = useRouter()
   const [pageLoading, setPageLoading] = useState(true)
 
@@ -23,17 +23,24 @@ export default function DashboardPage() {
   const chartsRef = useRef(null)
 
   useEffect(() => {
-    if (isLoaded && !isSignedIn) router.push('/sign-up')
-
-    if (isLoaded && isSignedIn) {
-      const timer = setTimeout(() => setPageLoading(false), 1500)
-      return () => clearTimeout(timer)
+    if (!loading) {
+      if (!user) {
+        // User not logged in, redirect to sign-in
+        router.push('/sign-in')
+      } else {
+        // User is logged in, show dashboard after delay
+        const timer = setTimeout(() => {
+          setPageLoading(false)
+        }, 800) // Reduced delay for better UX
+        
+        return () => clearTimeout(timer)
+      }
     }
-  }, [isLoaded, isSignedIn, router])
+  }, [loading, user, router])
 
   // GSAP Animations
   useEffect(() => {
-    if (!pageLoading && isSignedIn) {
+    if (!pageLoading && user) {
       const ctx = gsap.context(() => {
         // Set initial states immediately
         gsap.set([titleRef.current, subtitleRef.current, dividerRef.current], { 
@@ -82,9 +89,9 @@ export default function DashboardPage() {
 
       return () => ctx.revert()
     }
-  }, [pageLoading, isSignedIn])
+  }, [pageLoading, user])
 
-  if (pageLoading || !isLoaded) {
+  if (pageLoading || loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen dark:bg-black">
         <Loader2 className="w-12 h-12 mb-4 text-indigo-600 animate-spin" />
@@ -95,7 +102,7 @@ export default function DashboardPage() {
     )
   }
 
-  if (!isSignedIn) return null
+  if (!user) return null
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden"> 

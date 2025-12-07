@@ -184,7 +184,7 @@
 
 .hero-image {
   transform: rotateX(10deg) scale(1);
-  transition: transform 1s ease-out;
+  transition: transform 2s ease-out;
   will-change: transform;
   transform-style: preserve-3d;
   backface-visibility: hidden;

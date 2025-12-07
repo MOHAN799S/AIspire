@@ -11,7 +11,7 @@ import { AuthListener } from "@/components/AuthListener";
 export default function Home() {
   return (
     <div>
-       <AuthListener />
+       {/* <AuthListener /> */}
        <Toaster
                      position="top-right"
                      theme="dark"

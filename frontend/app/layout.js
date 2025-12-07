@@ -3,12 +3,11 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import { ClerkProvider } from "@clerk/nextjs";
-import { dark } from "@clerk/themes";
 import Chatbot from "@/components/Chat";
 import { Toaster } from "sonner";
 import { AuthListener } from "@/components/AuthListener";
 import AdvancedCursor from "@/components/Cursor";
+import { AuthProvider } from "@/components/auth/AuthContext";
 
 
 
@@ -33,11 +32,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider
-      appearance={{
-        baseTheme: dark,
-      }}
-    >
+
+    <AuthProvider>
 
       <html
         lang="en"
@@ -53,7 +49,7 @@ export default function RootLayout({ children }) {
           >
             
             {/* Auth Status Listener for Toast Notifications */}
-            <AuthListener />
+            {/* <AuthListener /> */}
             
             {/* Toast Notifications */}
             
@@ -67,13 +63,13 @@ export default function RootLayout({ children }) {
             <Chatbot />
             
             {/* Main Content */}
-            <main className="min-h-screen">{children}</main>
+            <main className="min-h-screen bg-black">{children}</main>
 
             {/* Footer */}
             <Footer />
           </ThemeProvider>
         </body>
       </html>
-    </ClerkProvider>
+     </AuthProvider>
   );
 }

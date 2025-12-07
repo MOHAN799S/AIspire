@@ -10,6 +10,18 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASS,
   },
 });
+console.log('SMTP_HOST:', process.env.SMTP_HOST);
+console.log('SMTP_USER:', process.env.SMTP_USER);
+console.log('ADMIN_EMAIL:', process.env.ADMIN_EMAIL);
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('SMTP connection error:', error);
+  } else {
+    console.log('SMTP server is ready to take messages');
+  }
+});
+
 
 // Admin notification email - Clean and minimal like the example
 const sendFeedbackNotification = async (feedback) => {

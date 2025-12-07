@@ -4,8 +4,9 @@ import { Button } from './ui/button'
 import Image from 'next/image'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useUser } from '@clerk/nextjs'
+
 import { useRouter } from 'next/navigation'
+import { useAuth } from './auth/AuthContext'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -16,7 +17,7 @@ export const HeroSection = () => {
   const buttonRef = useRef(null)
   const sectionRef = useRef(null)
 
-  const { isSignedIn } = useUser()
+  const { isSignedIn } = useAuth();
   const router = useRouter()
 
   const handleGetStarted = () => {
@@ -122,7 +123,7 @@ export const HeroSection = () => {
                 alt='hero-image'
                 width={1280}
                 height={720}
-                className='rounded-lg shadow-2xl border mx-auto max-w-full h-auto'
+                className='hero-image rounded-lg shadow-2xl border mx-auto max-w-full h-auto'
                 priority
               />
             </div>
